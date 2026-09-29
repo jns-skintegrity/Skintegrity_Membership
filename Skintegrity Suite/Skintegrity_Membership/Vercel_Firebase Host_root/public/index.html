@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skintegrity Membership Portal</title>
+  
+  <!-- 1. Firebase Compat SDK CDN Scripts (Loaded with defer for performance) -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      color: #173b37;
+      background: #f4f6ef;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.8fr);
+      background-color: #f4f6ef;
+      background-image: radial-gradient(#d7dfd4 0.7px, transparent 0.7px);
+      background-size: 18px 18px;
+    }
+    .brand-panel {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(28px, 6vw, 84px);
+      background: #173b37;
+      color: #f4f6ef;
+    }
+    .brand-name {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 400;
+    }
+    .brand-copy { max-width: 540px; padding: 72px 0; }
+    .brand-copy p {
+      max-width: 420px;
+      margin: 18px 0 0;
+      color: #c5d5ca;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .brand-copy h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(42px, 5.5vw, 76px);
+      font-weight: 400;
+      line-height: 1.04;
+    }
+    .brand-note { margin: 0; color: #c5d5ca; font-size: 13px; }
+    .login-panel {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding: 40px 28px;
+    }
+    .login-content { width: min(100%, 390px); }
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #a34d3c;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 38px;
+      font-weight: 400;
+      line-height: 1.15;
+    }
+    .intro { margin: 12px 0 32px; color: #52635d; line-height: 1.6; }
+    .credentials { display: grid; gap: 18px; }
+    label { display: grid; gap: 8px; color: #294943; font-size: 14px; font-weight: 600; }
+    input {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid #bdc9be;
+      border-radius: 4px;
+      padding: 0 14px;
+      background: #fffefa;
+      color: #173b37;
+      font: inherit;
+    }
+    input:focus { outline: 3px solid #d7a590; outline-offset: 2px; border-color: #a34d3c; }
+    button {
+      min-height: 50px;
+      border: 0;
+      border-radius: 4px;
+      padding: 0 18px;
+      background: #a34d3c;
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: #853b30; }
+    button:focus-visible { outline: 3px solid #173b37; outline-offset: 3px; }
+    button:disabled { cursor: wait; opacity: 0.7; }
+    .actions { display: grid; gap: 12px; margin-top: 20px; }
+    .secondary-button {
+      border: 1px solid #285c42;
+      background: transparent;
+      color: #285c42;
+    }
+    .secondary-button:hover { background: #e1ebe4; }
+    .text-button {
+      min-height: auto;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      color: #285c42;
+      font-size: 14px;
+      text-align: left;
+      text-decoration: underline;
+    }
+    .text-button:hover { background: transparent; color: #173b37; }
+    .status { min-height: 24px; margin: 16px 0 0; color: #8a342b; font-size: 14px; line-height: 1.5; }
+    .account-state { margin-top: 24px; }
+    .account-state[hidden], #logout-btn[hidden] { display: none; }
+    @media (max-width: 760px) {
+      body { min-height: 100svh; grid-template-columns: 1fr; }
+      .brand-panel { min-height: auto; padding: 26px 28px 30px; }
+      .brand-copy { padding: 46px 0 30px; }
+      .brand-copy h1 { max-width: 480px; font-size: clamp(40px, 10vw, 58px); }
+      .brand-copy p { margin-top: 12px; }
+      .brand-note { display: none; }
+      .login-panel { align-content: start; padding: 42px 28px 56px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="brand-panel">
+    <p class="brand-name">Skintegrity <span>Membership</span></p>
+    <div class="brand-copy">
+      <h1>Your care,<br>connected.</h1>
+      <p>A private space for your Skintegrity membership.</p>
+    </div>
+    <p class="brand-note">Skintegrity Partners LLC</p>
+  </main>
+
+  <section class="login-panel" aria-labelledby="login-heading">
+    <div class="login-content">
+      <p class="eyebrow">Member access</p>
+      <h2 id="login-heading">Welcome back</h2>
+      <p class="intro">Sign in with the email address and password associated with your membership.</p>
+      
+      <!-- Wrapped in a <form> tag to enable keyboard Enter submits -->
+      <form id="auth-form" onsubmit="return false;">
+        <div class="credentials">
+          <label for="email">Email address
+            <input id="email" name="email" type="email" autocomplete="username" required>
+          </label>
+          <label for="password">Password
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="login-btn" type="submit">Sign in</button>
+          <button id="signup-btn" class="secondary-button" type="button">Create an account</button>
+          <button id="reset-btn" class="text-button" type="button">Forgot password?</button>
+        </div>
+      </form>
+
+      <p id="status-message" class="status" role="status" aria-live="polite"></p>
+      <div class="account-state">
+        <button id="logout-btn" class="secondary-button" type="button" hidden>Sign out</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyApdhUZWXO2xIqbZLCQz89STTNOzNBjpjo",
+        authDomain: "skintegrity-membership.firebaseapp.com",
+        projectId: "skintegrity-membership",
+        storageBucket: "skintegrity-membership.firebasestorage.app",
+        messagingSenderId: "479447003992",
+        appId: "1:479447003992:web:a0fa34e4980bbfee80ab2d",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      const authForm = document.getElementById('auth-form');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const statusMsg = document.getElementById('status-message');
+
+      const showMessage = (msg, color = 'red') => {
+        statusMsg.textContent = msg;
+        statusMsg.style.color = color;
+      };
+
+      // 1. Log In (Triggered on submit or button click)
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value)
+          .then((userCredential) => {
+            showMessage("Successfully logged in!", "green");
+            console.log("Logged in:", userCredential.user);
+          })
+          .catch((error) => showMessage(error.message));
+      });
+
+      // 2. Sign Up & Automatically Create Firestore Profile
+      document.getElementById('signup-btn').addEventListener('click', () => {
+        if (!emailInput.value || !passwordInput.value) {
+          return showMessage("Please enter both an email and password to sign up.");
+        }
+        auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            return db.collection("users").doc(user.uid).set({
+              email: user.email,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              membershipStatus: "pending"
+            });
+          })
+          .then(() => showMessage("Account created successfully!", "green"))
+          .catch((error) => showMessage(error.message));
+      });
+
+      // 3. Password Reset
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        if (!emailInput.value) return showMessage("Please enter your email first.");
+        auth.sendPasswordResetEmail(emailInput.value)
+          .then(() => showMessage("Password reset email sent!", "green"))
+          .catch((error) => showMessage(error.message));
+      });
+
+      // Monitor Auth State
+      auth.onAuthStateChanged((user) => {
+        document.getElementById('logout-btn').hidden = !user;
+      });
+
+      // Sign Out
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        auth.signOut().then(() => showMessage("Signed out.", "orange"));
+      });
+    });
+  </script>
+</body>
+</html>
