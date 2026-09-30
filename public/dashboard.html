@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Skintegrity Suite</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header>
+    <h1>Skintegrity Suite Dashboard</h1>
+    <div>
+      <span>Welcome, <strong id="user-display-name">Loading...</strong></span>
+      <span class="badge" id="user-display-role">...</span>
+      <button id="logout-btn">Log Out</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Upgrade Banner for Free Tier Users -->
+    <div id="upgrade-banner" style="display: none;" class="banner">
+      <p> You are on the <strong>Free Tier</strong>. Upgrade to access full clinical tools!</p>
+      <button onclick="alert('Redirecting to payment...')">Upgrade Now</button>
+    </div>
+
+    <!-- Free Content (Visible to everyone) -->
+    <section id="free-content" style="display: none;">
+      <h2>Public Resources</h2>
+      <p>Welcome to the free portal resources and basic tools.</p>
+    </section>
+
+    <!-- Member Content (Visible to 'member' & 'colleague') -->
+    <section id="member-content" style="display: none;">
+      <h2>Member Portal & Clinical Suite</h2>
+      <p>Exclusive documentation, premium tools, and member downloads.</p>
+    </section>
+
+    <!-- Colleague Content (Visible only to 'colleague') -->
+    <section id="colleague-content" style="display: none;">
+      <h2>LLC Colleague Administrative Suite</h2>
+      <p>Internal team management, reporting, and operations portal.</p>
+    </section>
+  </main>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

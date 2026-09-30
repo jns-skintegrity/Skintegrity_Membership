@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Skintegrity Membership</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <main class="signup-container">
+    <h2>Create Your Account</h2>
+    
+    <form id="signup-form">
+      <div class="form-group">
+        <label for="full-name">Full Name</label>
+        <input type="text" id="full-name" placeholder="John Doe" required />
+      </div>
+
+      <div class="form-group">
+        <label for="signup-email">Email Address</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" placeholder="••••••••" required />
+      </div>
+
+      <div class="form-group">
+        <label for="user-tier">Select Membership Tier</label>
+        <select id="user-tier">
+          <option value="free">Free Tier Member</option>
+          <option value="member">Full Membership</option>
+        </select>
+      </div>
+
+      <button type="submit" id="signup-btn">Create Account</button>
+    </form>
+
+    <p>Already have an account? <a href="/index.html">Log In</a></p>
+  </main>
+
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skintegrity Membership Portal</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="brand-panel">
+    <div class="brand-content">
+      <h1 class="brand-logo">Skintegrity Membership</h1>
+      <div class="brand-hero">
+        <h2 class="hero-title">Your care,<br>connected.</h2>
+        <p class="hero-subtitle">A private space for your Skintegrity membership.</p>
+      </div>
+      <p class="brand-footer">Skintegrity Partners LLC</p>
+    </div>
+  </main>
+
+  <section class="login-panel" aria-labelledby="login-heading">
+    <div class="login-content">
+      <p class="eyebrow">Member access</p>
+      <h2 id="login-heading">Welcome back</h2>
+      <p class="intro">Sign in with the email address and password associated with your membership.</p>
+
+      <form id="auth-form" onsubmit="return false;">
+        <div class="credentials">
+          <label for="email">Email address</label>
+          <input type="email" id="email" required autocomplete="email">
+
+          <label for="password">Password</label>
+          <input type="password" id="password" required autocomplete="current-password">
+        </div>
+
+        <div class="actions">
+          <button id="login-btn" type="submit">Sign in</button>
+          <button id="signup-btn" class="secondary-button" type="button" onclick="window.location.href='signup.html'">Create an account</button>
+          <button id="reset-btn" class="text-button" type="button">Forgot password?</button>
+        </div>
+      </form>
+
+      <p id="status-message" class="status" role="status" aria-live="polite"></p>
+
+      <div class="account-state">
+        <button id="logout-btn" class="secondary-button" type="button" style="display: none;">Sign out</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modular Firebase Entry Point -->
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>
