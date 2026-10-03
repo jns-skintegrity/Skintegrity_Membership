@@ -3,48 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Skintegrity Suite</title>
+  <title>Skintegrity Clinical Suite</title>
   <link rel="stylesheet" href="css/styles.css">
   <script type="module" src="js/dashboard.js" defer></script>
 </head>
-<body>
+<body class="dashboard-body">
+  <main class="dashboard-container">
+    <header class="dashboard-userbar">
+      <div class="dashboard-user">
+        <span class="dashboard-welcome">Welcome back,</span>
+        <strong id="user-display-name">Loading...</strong>
+        <span id="user-display-role" class="badge dashboard-role">...</span>
+      </div>
+      <button id="logout-btn" class="btn-outline dashboard-logout" type="button">Log Out</button>
+    </header>
 
-  <header>
-    <h1>Skintegrity Suite Dashboard</h1>
-    <div>
-      <span>Welcome, <strong id="user-display-name">Loading...</strong></span>
-      <span class="badge" id="user-display-role">...</span>
-      <button id="logout-btn">Log Out</button>
+    <div id="upgrade-banner" class="dashboard-upgrade" style="display: none;">
+      <p>You are on the <strong>Free Tier</strong>. Upgrade to access member clinical tools.</p>
+      <button type="button" onclick="alert('Please contact Skintegrity support about membership options.')">
+        Membership options
+      </button>
     </div>
-  </header>
 
-  <main>
-    <!-- Upgrade Banner for Free Tier Users -->
-    <div id="upgrade-banner" style="display: none;" class="banner">
-      <p> You are on the <strong>Free Tier</strong>. Upgrade to access full clinical tools!</p>
-      <button onclick="alert('Redirecting to payment...')">Upgrade Now</button>
-    </div>
-
-    <!-- Free Content (Visible to everyone) -->
-    <section id="free-content" style="display: none;">
-      <h2>Public Resources</h2>
-      <p>Welcome to the free portal resources and basic tools.</p>
+    <section id="free-content" class="dashboard-section" style="display: none;">
+      <span class="dashboard-eyebrow">SKINTEGRITY PARTNERS</span>
+      <h1>Member resources</h1>
+      <p>Welcome to your Skintegrity membership resources.</p>
     </section>
 
-    <!-- Member Content (Visible to 'member' & 'colleague') -->
-   <section id="member-content" style="display: none;">
-  <h2>Member Portal & Clinical Suite</h2>
-  
-  <div class="tool-links" style="margin-top: 15px; display: flex; gap: 10px;">
-    <a href="https://sora-sf-tool.vercel.app" class="button" target="_blank">Launch SORA SF Tool</a>
-    <a href="https://treatment-advisor.vercel.app" class="button" target="_blank">Launch Dressing Advisor</a>
-  </div>
-</section>
-    <section id="colleague-content" style="display: none;">
+    <section id="member-content" class="dashboard-section" style="display: none;">
+      <span class="dashboard-eyebrow">YOUR WORKSPACE</span>
+      <h1>Skintegrity Clinical Suite</h1>
+      <p class="dashboard-section-intro">Choose a clinical tool to continue.</p>
+
+      <div class="tool-grid">
+        <article class="card tool-card">
+          <span class="tool-card-label">CLINICAL ASSESSMENT</span>
+          <h2>SORA SF Tool</h2>
+          <p>Access the SORA-SF clinical assessment framework.</p>
+          <a
+            href="https://sora-sf-tool.vercel.app"
+            class="btn-primary tool-launch"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Launch SORA SF Tool <span aria-hidden="true">&rarr;</span></a>
+        </article>
+
+        <article class="card tool-card">
+          <span class="tool-card-label">WOUND CARE REFERENCE</span>
+          <h2>Dressing / Treatment Advisor</h2>
+          <p>Review clinician-facing dressing considerations and assessment prompts.</p>
+          <a
+            href="https://treatment-advisor.vercel.app"
+            class="btn-primary tool-launch"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Launch Treatment Advisor <span aria-hidden="true">&rarr;</span></a>
+        </article>
+      </div>
+    </section>
+
+    <section id="colleague-content" class="dashboard-section colleague-section" style="display: none;">
+      <span class="dashboard-eyebrow">TEAM WORKSPACE</span>
       <h2>LLC Colleague Administrative Suite</h2>
       <p>Internal team management, reporting, and operations portal.</p>
     </section>
-  </main>
 
+    <footer class="dashboard-footer">
+      <span>SKINTEGRITY PARTNERS LLC</span>
+      <span>Use clinical tools in accordance with professional judgment and local policy.</span>
+    </footer>
+  </main>
 </body>
 </html>
