@@ -1,22 +1,20 @@
 /* ==========================================================================
-   Skintegrity Suite - Design System & Modern Theme
+   Skintegrity - Modern Dark Split Layout Design System
    ========================================================================== */
 
 :root {
-  --primary-color: #1e3a8a;       /* Deep Clinical Blue */
-  --primary-hover: #1d4ed8;
-  --secondary-color: #0f766e;     /* Teal Accent */
-  --background-bg: #f8fafc;
-  --card-bg: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --badge-free-bg: #f1f5f9;
-  --badge-free-text: #475569;
-  --badge-premium-bg: #dcfce7;
-  --badge-premium-text: #15803d;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --bg-dark: #0b0f19;
+  --bg-card: #111827;
+  --bg-card-input: #1f2937;
+  --border-color: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #1d4ed8;
+  --accent-cyan: #38bdf8;
+  --security-bg: #ffffff;
+  --security-text: #1f2937;
   --radius: 8px;
 }
 
@@ -24,177 +22,282 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--background-bg);
-  color: var(--text-main);
-  line-height: 1.5;
-  padding: 2rem 1rem;
-}
-
-/* Layout Container */
-.container, main, section {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-/* Header & Typography */
-h1 {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.025em;
-}
-
-h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--border-color);
-  padding-bottom: 0.5rem;
-}
-
-p {
-  color: var(--text-muted);
-  margin-bottom: 1rem;
-}
-
-/* User Welcome Bar / Card */
-.user-bar, .welcome-section {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 1.25rem 1.5rem;
+body.login-body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 1.5rem;
+  justify-content: center;
 }
 
-/* Status Badges */
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  border-radius: 9999px;
-  letter-spacing: 0.05em;
-  margin-left: 0.5rem;
-}
-
-.badge-free {
-  background-color: var(--badge-free-bg);
-  color: var(--badge-free-text);
-}
-
-.badge-premium, .badge-admin {
-  background-color: var(--badge-premium-bg);
-  color: var(--badge-premium-text);
-}
-
-/* Tool & Resource Cards Grid */
-.tool-grid {
+.login-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
-  margin-top: 1rem;
+  grid-template-columns: 1fr 1fr;
+  width: 100vw;
+  min-height: 100vh;
 }
 
-.card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+@media (max-width: 900px) {
+  .login-container {
+    grid-template-columns: 1fr;
+  }
+  .hero-section {
+    display: none;
+  }
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+/* --- Left Hero Section --- */
+.hero-section {
+  background-color: #080c14;
+  border-right: 1px solid var(--border-color);
+  padding: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.card h3 {
-  font-size: 1.25rem;
-  color: var(--primary-color);
+.hero-content {
+  max-width: 480px;
+}
+
+.hero-image-wrapper {
+  width: 100%;
+  height: 240px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.highlight-text {
+  color: var(--accent-cyan);
+  font-style: italic;
+}
+
+.hero-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.feature-list {
+  list-style: none;
+  margin-bottom: 3rem;
+}
+
+.feature-list li {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.check-icon {
+  color: var(--accent-cyan);
+  font-weight: bold;
+}
+
+.hero-footer {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* --- Right Form Section --- */
+.form-section {
+  padding: 4rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 420px;
+}
+
+.form-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
-/* Buttons */
-button, .btn, a.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--primary-color);
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 0.625rem 1.25rem;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.2s ease;
+.form-header p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
 }
 
-button:hover, .btn:hover {
-  background-color: var(--primary-hover);
-}
-
-/* Secondary / Outline Button */
-button.secondary, .btn-secondary {
-  background-color: transparent;
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-}
-
-button.secondary:hover, .btn-secondary:hover {
-  background-color: #f1f5f9;
-}
-
-/* Form Styles (Sign In / Register) */
-form {
-  background: var(--card-bg);
+.login-card {
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   padding: 2rem;
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  max-width: 420px;
-  margin: 2rem auto;
+  margin-bottom: 1.5rem;
 }
 
 .form-group {
   margin-bottom: 1.25rem;
 }
 
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-bottom: 0.375rem;
-  color: var(--text-main);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.forgot-link {
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  text-decoration: none;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-muted);
 }
 
 input[type="email"],
-input[type="password"],
-input[type="text"] {
+input[type="password"] {
   width: 100%;
-  padding: 0.625rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  background-color: var(--bg-card-input);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.2s ease;
 }
 
 input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+  border-color: var(--accent-blue);
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-checkbox label {
+  margin-bottom: 0;
+  font-weight: normal;
+  text-transform: none;
+  font-size: 0.8rem;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #1e3a8a;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-blue-hover);
+}
+
+.btn-outline {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: var(--border-color);
+}
+
+/* Security Notice Box */
+.security-card {
+  background-color: var(--security-bg);
+  color: var(--security-text);
+  padding: 1rem;
+  border-radius: var(--radius);
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+
+.security-icon {
+  font-weight: bold;
+}
+
+.technical-support {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.technical-support a {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+
+.portal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+.portal-footer a {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  text-decoration: none;
+  letter-spacing: 0.05em;
 }

@@ -3,52 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skintegrity Membership Portal</title>
+  <title>Skintegrity Membership - Login</title>
   <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/auth.js" defer></script>
 </head>
-<body>
-  <main class="brand-panel">
-    <div class="brand-content">
-      <h1 class="brand-logo">Skintegrity Membership</h1>
-      <div class="brand-hero">
-        <h2 class="hero-title">Your care,<br>connected.</h2>
-        <p class="hero-subtitle">A private space for your Skintegrity membership.</p>
-      </div>
-      <p class="brand-footer">Skintegrity Partners LLC</p>
-    </div>
-  </main>
+<body class="login-body">
+  <div class="login-container">
 
-  <section class="login-panel" aria-labelledby="login-heading">
-    <div class="login-content">
-      <p class="eyebrow">Member access</p>
-      <h2 id="login-heading">Welcome back</h2>
-      <p class="intro">Sign in with the email address and password associated with your membership.</p>
-
-      <form id="auth-form" onsubmit="return false;">
-        <div class="credentials">
-          <label for="email">Email address</label>
-          <input type="email" id="email" required autocomplete="email">
-
-          <label for="password">Password</label>
-          <input type="password" id="password" required autocomplete="current-password">
+    <!-- Left Hero Section -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <div class="hero-image-wrapper">
+          <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop" alt="Skintegrity Care" class="hero-img">
         </div>
 
-        <div class="actions">
-          <button id="login-btn" type="submit">Sign in</button>
-          <button id="signup-btn" class="secondary-button" type="button" onclick="window.location.href='signup.html'">Create an account</button>
-          <button id="reset-btn" class="text-button" type="button">Forgot password?</button>
+        <h1 class="hero-title">Your care,<br><span class="highlight-text">connected.</span></h1>
+
+        <p class="hero-description">
+          A private space for your Skintegrity membership. Access clinical tools, SORA-SF-CAT frameworks, and expert dressing guidance in one secure portal.
+        </p>
+
+        <ul class="feature-list">
+          <li><span class="check-icon">✓</span> Evidence-based SORA Clinical Suite</li>
+          <li><span class="check-icon">✓</span> Secure patient-level assessment history</li>
+          <li><span class="check-icon">✓</span> Real-time WOC nurse protocol support</li>
+        </ul>
+
+        <div class="hero-footer">
+          <span>SKINTEGRITY PARTNERS LLC</span> • <span>ADVANCING NURSING CARE</span>
         </div>
-      </form>
-
-      <p id="status-message" class="status" role="status" aria-live="polite"></p>
-
-      <div class="account-state">
-        <button id="logout-btn" class="secondary-button" type="button" style="display: none;">Sign out</button>
       </div>
     </div>
-  </section>
 
-  <!-- Modular Firebase Entry Point -->
-  <script type="module" src="js/auth.js"></script>
+    <!-- Right Form Section -->
+    <div class="form-section">
+      <div class="form-wrapper">
+        <div class="form-header">
+          <h2>Welcome back</h2>
+          <p>Sign in with the email address and password associated with your membership.</p>
+        </div>
+
+        <form id="auth-form" onsubmit="return false;" class="login-card">
+          <div class="form-group">
+            <label for="login-email">EMAIL ADDRESS</label>
+            <div class="input-with-icon">
+              <span class="input-icon">✉</span>
+              <input type="email" id="login-email" placeholder="name@institution.com" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="login-password">PASSWORD</label>
+              <a href="signup.html" class="forgot-link">Forgot password?</a>
+            </div>
+            <div class="input-with-icon">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="login-password" placeholder="••••••••" required>
+            </div>
+          </div>
+
+          <div class="form-checkbox">
+            <input type="checkbox" id="remember-me">
+            <label for="remember-me">Remember this device for 30 days</label>
+          </div>
+
+          <button id="login-btn" type="submit" class="btn-primary">SIGN IN &rarr;</button>
+          <button type="button" class="btn-outline" onclick="window.location.href='signup.html'">CREATE AN ACCOUNT</button>
+        </form>
+
+        <!-- Security Notice -->
+        <div class="security-card">
+          <div class="security-icon">ⓘ</div>
+          <div class="security-text">
+            <strong>Security Note:</strong> This workstation is monitored. Use of this portal constitutes acceptance of our clinical data processing standards and HIPAA compliance protocols.
+          </div>
+        </div>
+
+        <div class="technical-support">
+          <a href="#"> NEED TECHNICAL ASSISTANCE?</a>
+        </div>
+
+        <footer class="portal-footer">
+          <a href="#">PRIVACY POLICY</a>
+          <a href="#">TERMS OF USE</a>
+          <a href="#">COOKIE SETTINGS</a>
+        </footer>
+      </div>
+    </div>
+
+  </div>
 </body>
 </html>
