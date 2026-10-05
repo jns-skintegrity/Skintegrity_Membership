@@ -1,80 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skintegrity Suite Dashboard</title>
-  <!-- Make sure this link points to your styles.css file -->
+  <title>Skintegrity Suite - Dashboard</title>
   <link rel="stylesheet" href="css/styles.css">
   <script type="module" src="js/dashboard.js" defer></script>
 </head>
-<body class="dashboard-body">
-  <main class="dashboard-container">
-    <header class="dashboard-userbar">
-      <div class="dashboard-user">
-        <span class="dashboard-welcome">Welcome back,</span>
-        <strong id="user-display-name">Loading...</strong>
-        <span id="user-display-role" class="badge dashboard-role">...</span>
+<body class="login-body">
+  <div style="width: 100%; max-width: 960px; margin: 0 auto; padding: 2rem 1rem;">
+
+    <!-- Header / User Info Bar -->
+    <header class="login-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <div>
+        <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Logged in as</p>
+        <h2 id="user-display-name" style="color: var(--text-primary); font-size: 1.25rem; margin: 0.25rem 0;">Loading user...</h2>
+        <span id="user-display-role" class="badge badge-premium" style="margin-left: 0;">VERIFYING TIER...</span>
       </div>
-      <button id="logout-btn" class="btn-outline dashboard-logout" type="button">Log Out</button>
+      <button id="logout-btn" class="btn-outline" style="width: auto; padding: 0.5rem 1.25rem;">Log Out</button>
     </header>
 
-    <div id="upgrade-banner" class="dashboard-upgrade" style="display: none;">
-      <p>You are on the <strong>Free Tier</strong>. Upgrade to access member clinical tools.</p>
-      <button type="button" onclick="alert('Please contact Skintegrity support about membership options.')">
-        Membership options
-      </button>
+    <!-- Upgrade Banner (Shown only for Free Tier) -->
+    <div id="upgrade-banner" class="login-card" style="display: none; border-left: 4px solid var(--accent-cyan); margin-bottom: 2rem;">
+      <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Free Tier Access</h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">You are currently on the free tier. Upgrade your account to unlock full clinical suit tools.</p>
+      <button class="btn-primary" style="width: auto;">Upgrade Membership &rarr;</button>
     </div>
 
-    <section id="free-content" class="dashboard-section" style="display: none;">
-      <span class="dashboard-eyebrow">SKINTEGRITY PARTNERS</span>
-      <h1>Member resources</h1>
-      <p>Welcome to your Skintegrity membership resources.</p>
-    </section>
+    <!-- Member/Premium Content Section (Shown when membershipTier is Premium/Member) -->
+    <div id="member-content" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
 
-    <section id="member-content" class="dashboard-section" style="display: none;">
-      <span class="dashboard-eyebrow">YOUR WORKSPACE</span>
-      <h1>Skintegrity Clinical Suite</h1>
-      <p class="dashboard-section-intro">Choose a clinical tool to continue.</p>
-
-      <div class="tool-grid">
-        <article class="card tool-card">
-          <span class="tool-card-label">CLINICAL ASSESSMENT</span>
-          <h2>SORA SF Tool</h2>
-          <p>Access the SORA-SF clinical assessment framework.</p>
-          <a
-            href="https://sora-sf-tool.vercel.app"
-            class="btn-primary tool-launch"
-            target="_blank"
-            rel="noopener noreferrer"
-          >Launch SORA SF Tool <span aria-hidden="true">&rarr;</span></a>
-        </article>
-
-        <article class="card tool-card">
-          <span class="tool-card-label">WOUND CARE REFERENCE</span>
-          <h2>Dressing / Treatment Advisor</h2>
-          <p>Review clinician-facing dressing considerations and assessment prompts.</p>
-          <a
-            href="https://treatment-advisor.vercel.app"
-            class="btn-primary tool-launch"
-            target="_blank"
-            rel="noopener noreferrer"
-          >Launch Treatment Advisor <span aria-hidden="true">&rarr;</span></a>
-        </article>
+      <div class="login-card" style="margin-bottom: 0;">
+        <h3 style="color: var(--accent-cyan); font-size: 1.2rem; margin-bottom: 0.5rem;">SORA SF Tool</h3>
+        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5;">Access standardized clinical assessment tools and reporting frameworks.</p>
+        <a href="https://sora-sf-tool.vercel.app" class="btn-primary" style="text-decoration: none; display: block; text-align: center;">Launch Sora Tool &rarr;</a>
       </div>
-    </section>
 
-    <section id="colleague-content" class="dashboard-section colleague-section" style="display: none;">
-      <span class="dashboard-eyebrow">TEAM WORKSPACE</span>
-      <h2>LLC Colleague Administrative Suite</h2>
-      <p>Internal team management, reporting, and operations portal.</p>
-    </section>
+      <div class="login-card" style="margin-bottom: 0;">
+        <h3 style="color: var(--accent-cyan); font-size: 1.2rem; margin-bottom: 0.5rem;">Dressing / Treatment Advisor</h3>
+        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5;">Evidence-based wound care dressing protocols and product recommendations.</p>
+        <a href="https://treatment-advisor.vercel.app" class="btn-primary" style="text-decoration: none; display: block; text-align: center;">Launch Advisor &rarr;</a>
+      </div>
 
-    <footer class="dashboard-footer">
-      <span>SKINTEGRITY PARTNERS LLC</span>
-      <span>Use clinical tools in accordance with professional judgment and local policy.</span>
-    </footer>
-  </main>
+    </div>
+
+    <!-- Free Public Content Section -->
+    <div id="free-content" class="login-card">
+      <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Public Clinical Resources</h3>
+      <p style="color: var(--text-secondary); font-size: 0.875rem;">Welcome to the general Skintegrity portal. Explore public guidelines and updates.</p>
+    </div>
+
+    <!-- Optional Colleague Section -->
+    <div id="colleague-content" class="login-card" style="display: none; margin-top: 1.5rem; border-color: var(--accent-blue);">
+      <h3 style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 0.5rem;">Colleague Internal Portal</h3>
+      <p style="color: var(--text-secondary); font-size: 0.875rem;">Exclusive administrative and internal partner management controls.</p>
+    </div>
+
+  </div>
 </body>
 </html>

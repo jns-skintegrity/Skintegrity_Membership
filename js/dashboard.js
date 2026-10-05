@@ -11,27 +11,33 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   try {
-    // Fetch user profile from Firestore
+    // Fetch user profile from Firestore using Authentication UID
     const userDoc = await getDoc(doc(db, "users", user.uid));
-    
+
     if (userDoc.exists()) {
       const userData = userDoc.data();
-      const role = userData.role ? userData.role.toLowerCase() : 'free';
+
+      // Handle tier/role safely across variations (membershipTier or role, trim whitespace, lowercase)
+      const rawRole = userData.membershipTier || userData.role || 'free';
+      const role = rawRole.toString().trim().toLowerCase();
 
       // 1. Populate user info elements in the UI
       const nameElem = document.getElementById("user-display-name");
       const roleElem = document.getElementById("user-display-role");
-      
-      if (nameElem) nameElem.textContent = userData.name || user.email;
-      if (roleElem) roleElem.textContent = role.toUpperCase();
 
-      // 2. Gate UI sections based on user role
+      if (nameElem) nameElem.textContent = userData.fullName || userData.name || user.email.trim();
+      if (roleElem) roleElem.textContent = role.toUpperCase() + " ACCESS";
+
+      // 2. Gate UI sections based on user role/tier
       gateDashboardContent(role);
     } else {
-      console.warn("No Firestore profile found for user:", user.uid);
+      console.warn("No Firestore profile found for user UID:", user.uid);
+      // Fallback if document missing
+      gateDashboardContent("free");
     }
   } catch (error) {
     console.error("Error fetching user profile:", error);
+    gateDashboardContent("free");
   }
 });
 
@@ -42,22 +48,24 @@ function gateDashboardContent(role) {
   const colleagueSection = document.getElementById("colleague-content");
   const upgradeBanner = document.getElementById("upgrade-banner");
 
-  if (role === "free") {
+  // "premium", "member", or "colleague" grant elevated access
+  if (role === "premium" || role === "member") {
+    if (freeSection) freeSection.style.display = "none";
+    if (memberSection) memberSection.style.display = "grid";
+    if (colleagueSection) colleagueSection.style.display = "none";
+    if (upgradeBanner) upgradeBanner.style.display = "none";
+  } else if (role === "colleague" || role === "admin") {
+    // Colleagues/Admins get access to all sections
+    if (freeSection) freeSection.style.display = "block";
+    if (memberSection) memberSection.style.display = "grid";
+    if (colleagueSection) colleagueSection.style.display = "block";
+    if (upgradeBanner) upgradeBanner.style.display = "none";
+  } else {
+    // Default Free Tier
     if (freeSection) freeSection.style.display = "block";
     if (memberSection) memberSection.style.display = "none";
     if (colleagueSection) colleagueSection.style.display = "none";
     if (upgradeBanner) upgradeBanner.style.display = "block";
-  } else if (role === "member") {
-    if (freeSection) freeSection.style.display = "block";
-    if (memberSection) memberSection.style.display = "block";
-    if (colleagueSection) colleagueSection.style.display = "none";
-    if (upgradeBanner) upgradeBanner.style.display = "none";
-  } else if (role === "colleague") {
-    // Colleagues get full access to all sections
-    if (freeSection) freeSection.style.display = "block";
-    if (memberSection) memberSection.style.display = "block";
-    if (colleagueSection) colleagueSection.style.display = "block";
-    if (upgradeBanner) upgradeBanner.style.display = "none";
   }
 }
 
