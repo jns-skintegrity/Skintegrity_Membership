@@ -511,6 +511,190 @@ body.signin-page .btn-primary:hover {
   letter-spacing: 0.08em;
 }
 
+body.dashboard-body {
+  align-items: flex-start;
+}
+
+body.dashboard-body [hidden] {
+  display: none !important;
+}
+
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dashboard-action {
+  width: auto;
+  flex: 0 0 auto;
+  padding: 0.55rem 0.85rem;
+  color: var(--text-primary);
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dashboard-action[aria-expanded="true"] {
+  color: #fffefa;
+  background: var(--accent-blue);
+}
+
+.dashboard-userbar {
+  align-items: center;
+}
+
+.data-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.35rem;
+}
+
+.data-heading h1 {
+  margin-bottom: 0.55rem;
+}
+
+.data-heading .dashboard-section-intro {
+  max-width: 650px;
+  margin-bottom: 0;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.metric-card,
+.analytics-card {
+  padding: 1.15rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+}
+
+.metric-card {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.metric-card span,
+.analytics-caption {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.metric-card strong {
+  color: var(--text-primary);
+  font-size: 1.65rem;
+}
+
+.analytics-card {
+  margin-top: 1rem;
+}
+
+.analytics-card h2 {
+  margin-bottom: 0.65rem;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.usage-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  text-align: left;
+}
+
+.usage-table th,
+.usage-table td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.usage-table th {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+#analytics-status {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.chart-wrap {
+  margin-top: 0.6rem;
+}
+
+.chart-wrap svg {
+  display: block;
+  width: 100%;
+  min-height: 190px;
+  overflow: visible;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chart-legend i {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+}
+
+.legend-starts {
+  background: #a64f3d;
+}
+
+.legend-completions {
+  background: #173f36;
+}
+
+.category-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+  list-style: none;
+}
+
+.category-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.category-list strong {
+  color: var(--text-primary);
+}
+
 @media (max-width: 560px) {
   .dashboard-body {
     padding: 1rem 0.85rem;
@@ -523,6 +707,21 @@ body.signin-page .btn-primary:hover {
 
   .dashboard-user {
     gap: 0.35rem 0.55rem;
+  }
+
+  .dashboard-userbar,
+  .data-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
   }
 
   .dashboard-welcome {

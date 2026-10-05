@@ -7,61 +7,101 @@
   <link rel="stylesheet" href="css/styles.css">
   <script type="module" src="js/dashboard.js" defer></script>
 </head>
-<body class="login-body signin-page">
-  <div style="width: 100%; max-width: 960px; margin: 0 auto; padding: 2rem 1rem;">
-
-    <!-- Header / User Info Bar -->
-    <header class="login-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-      <div>
-        <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Logged in as</p>
-        <h2 id="user-display-name" style="color: var(--text-primary); font-size: 1.25rem; margin: 0.25rem 0;">Loading user...</h2>
-        <span id="user-display-role" class="badge badge-premium" style="margin-left: 0;">VERIFYING TIER...</span>
+<body class="login-body signin-page dashboard-body">
+  <div class="dashboard-container">
+    <header class="login-card dashboard-userbar">
+      <div class="dashboard-user">
+        <span class="dashboard-welcome">Logged in as</span>
+        <strong id="user-display-name">Loading user...</strong>
+        <span id="user-display-role" class="badge dashboard-role">VERIFYING ACCESS...</span>
       </div>
-      <button id="logout-btn" class="btn-outline" style="width: auto; padding: 0.5rem 1.25rem;">Log Out</button>
+      <nav class="dashboard-actions" aria-label="Dashboard actions">
+        <a id="sora-launch" class="btn-outline dashboard-action" href="https://sora-sf-tool.vercel.app"
+           target="_blank" rel="noopener noreferrer" hidden>SORA-SF</a>
+        <a id="advisor-launch" class="btn-outline dashboard-action" href="https://treatment-advisor-2uia.vercel.app"
+           target="_blank" rel="noopener noreferrer" hidden>Treatment Advisor</a>
+        <button id="data-toggle" class="btn-outline dashboard-action" type="button"
+                aria-controls="admin-data" aria-expanded="false" hidden>Data</button>
+        <button id="logout-btn" class="btn-outline dashboard-logout" type="button">Log Out</button>
+      </nav>
     </header>
 
-    <!-- Upgrade Banner (Shown only for Free Tier) -->
-    <div id="upgrade-banner" class="login-card" style="display: none; border-left: 4px solid var(--accent-cyan); margin-bottom: 2rem;">
-      <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Free Tier Access</h3>
-      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">You are currently on the free tier. Upgrade your account to unlock full clinical suit tools.</p>
-      <button class="btn-primary" style="width: auto;">Upgrade Membership &rarr;</button>
-    </div>
+    <main>
+      <section id="admin-home" class="login-card dashboard-section" hidden>
+        <span class="dashboard-eyebrow">SKINTEGRITY SUITE</span>
+        <h1>Welcome to the Admin dashboard</h1>
+        <p>Launch your clinical tools from the banner, or choose <strong>Data</strong> to review aggregate usage.</p>
+      </section>
 
-    <!-- Member/Premium Content Section (Shown when membershipTier is Premium/Member) -->
-    <div id="member-content" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+      <section id="free-content" class="login-card dashboard-section" hidden>
+        <span class="dashboard-eyebrow">SKINTEGRITY SUITE</span>
+        <h1>Welcome to your membership portal</h1>
+        <p>Your account is active. Full Membership and Premium access are not available yet.</p>
+      </section>
 
-      <div class="login-card" style="margin-bottom: 0;">
-        <h3 style="color: var(--accent-cyan); font-size: 1.2rem; margin-bottom: 0.5rem;">SORA SF Tool</h3>
-        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5;">Access standardized clinical assessment tools and reporting frameworks.</p>
-        <a href="https://sora-sf-tool.vercel.app"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="btn-primary"
-           style="text-decoration: none; display: block; text-align: center;">
-          Launch Sora Tool &rarr;
-        </a>
-      </div>
+      <section id="upgrade-banner" class="login-card dashboard-upgrade" hidden>
+        <h2>Premium Membership is coming soon</h2>
+        <p>We are preparing Premium access and will share an update when it becomes available.</p>
+      </section>
 
-      <div class="login-card" style="margin-bottom: 0;">
-        <h3 style="color: var(--accent-cyan); font-size: 1.2rem; margin-bottom: 0.5rem;">Dressing / Treatment Advisor</h3>
-        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5;">Evidence-based wound care dressing protocols and product recommendations.</p>
-        <a href="https://treatment-advisor-2uia.vercel.app" class="btn-primary" style="text-decoration: none; display: block; text-align: center;">Launch Advisor &rarr;</a>
-      </div>
+      <section id="admin-data" class="login-card dashboard-section admin-data" hidden>
+        <div class="data-heading">
+          <div>
+            <span class="dashboard-eyebrow">ADMIN DASHBOARD</span>
+            <h1>Tool usage</h1>
+            <p class="dashboard-section-intro">Daily aggregate activity from the last 30 days. No patient identifiers, case details, or assessment answers are collected.</p>
+          </div>
+          <button id="export-data" class="btn-outline dashboard-action" type="button" disabled>Export CSV</button>
+        </div>
 
-    </div>
+        <div class="metric-grid" aria-live="polite">
+          <article class="metric-card">
+            <span>Assessment attempts</span>
+            <strong id="metric-starts">—</strong>
+          </article>
+          <article class="metric-card">
+            <span>Completed reviews</span>
+            <strong id="metric-completions">—</strong>
+          </article>
+          <article class="metric-card">
+            <span>Completion rate</span>
+            <strong id="metric-rate">—</strong>
+          </article>
+        </div>
 
-    <!-- Free Public Content Section -->
-    <div id="free-content" class="login-card">
-      <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Public Clinical Resources</h3>
-      <p style="color: var(--text-secondary); font-size: 0.875rem;">Welcome to the general Skintegrity portal. Explore public guidelines and updates.</p>
-    </div>
+        <div class="analytics-card">
+          <h2>Usage by tool</h2>
+          <div class="table-scroll">
+            <table class="usage-table">
+              <thead>
+                <tr><th>Tool</th><th>Attempts</th><th>Completed</th><th>Completion rate</th></tr>
+              </thead>
+              <tbody id="tool-breakdown"></tbody>
+            </table>
+          </div>
+        </div>
 
-    <!-- Optional Colleague Section -->
-    <div id="colleague-content" class="login-card" style="display: none; margin-top: 1.5rem; border-color: var(--accent-blue);">
-      <h3 style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 0.5rem;">Colleague Internal Portal</h3>
-      <p style="color: var(--text-secondary); font-size: 0.875rem;">Exclusive administrative and internal partner management controls.</p>
-    </div>
+        <div class="analytics-card">
+          <h2>Daily activity</h2>
+          <p id="analytics-status" role="status">Loading aggregate usage…</p>
+          <div id="chart-wrap" class="chart-wrap" hidden>
+            <svg id="usage-chart" viewBox="0 0 720 230" role="img" aria-label="Daily tool starts and completed reviews"></svg>
+            <div class="chart-legend"><span><i class="legend-starts"></i>Started</span><span><i class="legend-completions"></i>Completed</span></div>
+          </div>
+        </div>
 
+        <div class="analytics-card">
+          <h2>Broad outcome categories</h2>
+          <p class="analytics-caption">Counts of generated guidance categories only; no individual assessment responses are stored.</p>
+          <ul id="category-list" class="category-list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="dashboard-footer">
+      <span>SKINTEGRITY PARTNERS LLC</span>
+      <span>Clinical tools support clinician judgment and local policy.</span>
+    </footer>
   </div>
 </body>
 </html>

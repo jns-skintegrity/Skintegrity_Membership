@@ -2,7 +2,9 @@ import { auth, db } from './firebase-config.js';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendEmailVerification,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -32,8 +34,10 @@ const completeToolHandoff = async (user, endpoint) => {
 
 const loginForm = document.getElementById('auth-form') || document.getElementById('login-form');
 
-const validMembershipTiers = new Set(['free', 'member', 'premium', 'colleague', 'admin']);
+const validMembershipTiers = new Set(['free', 'member']);
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const companyEmailDomain = '@skintegritypartners.com';
+const premiumUnavailableMessage = 'We apologize for the inconvenience. We at Skintegrity are hard at work making sure everything is functioning and pristine for our users. Please consider the following pending update: Premium user access. We will be updating shortly and will make our users aware of any changes. Thank you!';
 
 const getValidatedEmail = (value) => {
   const email = value.trim();
@@ -95,6 +99,19 @@ if (loginForm) {
 const signupForm = document.getElementById('signup-form');
 
 if (signupForm) {
+  const tierElem = document.getElementById('user-tier') || document.getElementById('membership-tier');
+  const emailElem = document.getElementById('signup-email') || document.getElementById('email');
+
+  if (tierElem) {
+    tierElem.addEventListener('change', () => {
+      const isCompanyAccount = emailElem?.value.trim().toLowerCase().endsWith(companyEmailDomain);
+      if (tierElem.value === 'member' && !isCompanyAccount) {
+        alert(premiumUnavailableMessage);
+        tierElem.value = 'free';
+      }
+    });
+  }
+
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -113,8 +130,16 @@ if (signupForm) {
       const fullName = getValidatedFullName(fullNameElem.value);
       const email = getValidatedEmail(emailElem.value);
       const password = getValidatedPassword(passwordElem.value, 'Password');
-      const membershipTier = getValidatedTier(tierElem.value);
+      const selectedTier = getValidatedTier(tierElem.value);
+      const isCompanyAccount = email.endsWith(companyEmailDomain);
 
+      if (!isCompanyAccount && selectedTier !== 'free') {
+        alert(premiumUnavailableMessage);
+        tierElem.value = 'free';
+        return;
+      }
+
+      const membershipTier = 'free';
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const userId = userCredential.user.uid;
 
@@ -125,6 +150,14 @@ if (signupForm) {
         role: membershipTier,
         createdAt: new Date().toISOString(),
       });
+
+      if (isCompanyAccount) {
+        await sendEmailVerification(userCredential.user);
+        await signOut(auth);
+        alert('Your company account has been created. Please verify your email address, then sign in to access the Admin dashboard.');
+        window.location.replace('./index.html');
+        return;
+      }
 
       goToDashboard();
     } catch (error) {

@@ -9,8 +9,11 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    function validTier(tier) {
-      return tier in ['free', 'member', 'premium', 'colleague', 'admin'];
+    function isCompanyAdmin() {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email is string
+        && request.auth.token.email.lower().matches('^[^@]+@skintegritypartners\\.com$');
     }
 
     match /users/{userId} {
@@ -22,21 +25,24 @@ service cloud.firestore {
         && request.resource.data.fullName.trim().size() >= 2
         && request.resource.data.email is string
         && request.resource.data.email == request.auth.token.email
-        && request.resource.data.membershipTier is string
-        && validTier(request.resource.data.membershipTier)
-        && request.resource.data.role == request.resource.data.membershipTier
+        && request.resource.data.membershipTier == 'free'
+        && request.resource.data.role == 'free'
         && request.resource.data.createdAt is string;
 
       allow update: if isOwner(userId)
         && request.resource.data.fullName is string
         && request.resource.data.fullName.trim().size() >= 2
         && request.resource.data.email == resource.data.email
-        && request.resource.data.membershipTier is string
-        && validTier(request.resource.data.membershipTier)
-        && request.resource.data.role == request.resource.data.membershipTier
+        && request.resource.data.membershipTier == resource.data.membershipTier
+        && request.resource.data.role == resource.data.role
         && request.resource.data.createdAt == resource.data.createdAt;
 
       allow delete: if false;
+    }
+
+    match /toolUsage/{dailyUsage} {
+      allow get, list: if isCompanyAdmin();
+      allow create, update, delete: if false;
     }
   }
 }
