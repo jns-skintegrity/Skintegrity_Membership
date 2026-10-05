@@ -25,7 +25,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-body.login-body {
+body.signin-page {
   --bg-dark: #f4f0e6;
   --bg-card: #fbf9f3;
   --bg-card-input: #fffefa;
@@ -38,6 +38,11 @@ body.login-body {
   --accent-cyan: #a64f3d;
   --security-bg: #ebe5d8;
   --security-text: #173f36;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+}
+
+body.login-body {
   background-color: var(--bg-dark);
   color: var(--text-primary);
   min-height: 100vh;
@@ -165,11 +170,15 @@ body.login-body {
 }
 
 .login-card {
-  background-color: rgb(251 249 243 / 94%);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   padding: 2rem;
   border-radius: var(--radius);
   margin-bottom: 1.5rem;
+}
+
+body.signin-page .login-card {
+  background-color: rgb(251 249 243 / 94%);
 }
 
 .form-group {
@@ -223,6 +232,9 @@ input[type="password"] {
 
 input:focus {
   border-color: var(--accent-blue);
+}
+
+body.signin-page input:focus {
   box-shadow: 0 0 0 3px rgb(166 79 61 / 14%);
 }
 
@@ -243,7 +255,7 @@ input:focus {
 .btn-primary {
   width: 100%;
   padding: 0.75rem;
-  background-color: #a64f3d;
+  background-color: #1e3a8a;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -256,6 +268,14 @@ input:focus {
 
 .btn-primary:hover {
   background-color: var(--accent-blue-hover);
+}
+
+body.signin-page .btn-primary {
+  background-color: #a64f3d;
+}
+
+body.signin-page .btn-primary:hover {
+  background-color: #8f4032;
 }
 
 .btn-outline {
