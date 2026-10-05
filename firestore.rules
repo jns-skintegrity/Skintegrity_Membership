@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function validTier(tier) {
+      return tier in ['free', 'member', 'premium', 'colleague', 'admin'];
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId)
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.trim().size() >= 2
+        && request.resource.data.email is string
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.membershipTier is string
+        && validTier(request.resource.data.membershipTier)
+        && request.resource.data.role == request.resource.data.membershipTier
+        && request.resource.data.createdAt is string;
+
+      allow update: if isOwner(userId)
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.trim().size() >= 2
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.membershipTier is string
+        && validTier(request.resource.data.membershipTier)
+        && request.resource.data.role == request.resource.data.membershipTier
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if false;
+    }
+  }
+}

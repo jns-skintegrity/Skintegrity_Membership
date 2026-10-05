@@ -6,7 +6,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     // Redirect unauthenticated users to login page
-    window.location.href = "/index.html";
+    window.location.replace('./index.html');
     return;
   }
 
@@ -75,7 +75,7 @@ if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
     try {
       await signOut(auth);
-      window.location.href = "/index.html";
+      window.location.replace('./index.html');
     } catch (error) {
       console.error("Error logging out:", error);
     }
