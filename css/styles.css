@@ -265,48 +265,6 @@ input:focus-visible {
   font-style: normal;
 }
 
-.clinical-search {
-  display: flex;
-  width: min(100%, 340px);
-  height: 36px;
-  align-items: center;
-  gap: 9px;
-  margin-left: auto;
-  padding: 0 10px;
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  background: var(--surface-input);
-  color: #718099;
-}
-
-.clinical-search > span {
-  font-size: 19px;
-}
-
-.clinical-search input {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--text);
-  font-size: 10px;
-}
-
-.clinical-search input::placeholder {
-  color: #647188;
-}
-
-.clinical-search kbd {
-  flex: 0 0 auto;
-  padding: 2px 4px;
-  border: 1px solid #2a3548;
-  border-radius: 3px;
-  color: #69778c;
-  font-family: inherit;
-  font-size: 8px;
-}
-
 .topbar-utilities {
   display: flex;
   flex: 0 0 auto;
@@ -567,12 +525,14 @@ input:focus-visible {
   display: flex;
   width: 242px;
   min-width: 220px;
-  align-items: flex-start;
-  gap: 11px;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   padding: 15px;
   border: 1px solid rgb(217 119 6 / 24%);
   border-radius: 9px;
   background: linear-gradient(145deg, rgb(217 119 6 / 10%), rgb(18 24 36 / 93%) 66%);
+  text-align: center;
 }
 
 .decision-icon {
@@ -1199,6 +1159,64 @@ body[data-theme='light'] .admin-data-panel {
   background: #fff;
 }
 
+body[data-theme='light'] button:focus-visible,
+body[data-theme='light'] a:focus-visible,
+body[data-theme='light'] input:focus-visible {
+  outline: 0;
+  box-shadow: inset 0 -2px 0 #2563eb;
+}
+
+body[data-theme='light'] .nav-item:hover,
+body[data-theme='light'] .nav-item.is-active,
+body[data-theme='light'] .nav-button:focus-visible {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  color: #172235;
+  box-shadow: inset 0 -2px 0 #2563eb;
+}
+
+body[data-theme='light'] .nav-item:hover > *,
+body[data-theme='light'] .nav-item.is-active > *,
+body[data-theme='light'] .nav-button:focus-visible > * {
+  color: #172235;
+}
+
+body[data-theme='light'] .nav-item:hover .nav-icon,
+body[data-theme='light'] .nav-item.is-active .nav-icon {
+  color: #1d4ed8;
+}
+
+body[data-theme='light'] .icon-button:hover,
+body[data-theme='light'] .icon-button:focus-visible {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  color: #172235;
+  box-shadow: inset 0 -2px 0 #2563eb;
+}
+
+body[data-theme='light'] .tool-button:hover,
+body[data-theme='light'] .utility-card:hover,
+body[data-theme='light'] .utility-card:focus-visible {
+  border-color: transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: #172235;
+  box-shadow: inset 0 -2px 0 #2563eb;
+}
+
+body[data-theme='light'] .button-primary:hover {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: inset 0 -2px 0 #bfdbfe;
+}
+
+body[data-theme='light'] .profile-copy strong:hover,
+body[data-theme='light'] .status-metric strong a:hover {
+  box-shadow: inset 0 -2px 0 #2563eb;
+}
+
 body[data-theme='console'] {
   --page: #05080b;
   --sidebar: #070b0f;
@@ -1234,10 +1252,6 @@ body[data-theme='console'] .clinical-topbar {
     padding-left: 20px;
   }
 
-  .clinical-search {
-    max-width: 260px;
-  }
-
   .version-pill {
     display: none;
   }
@@ -1269,10 +1283,6 @@ body[data-theme='console'] .clinical-topbar {
   .profile-slot {
     min-width: 115px;
     padding-left: 7px;
-  }
-
-  .clinical-search {
-    max-width: 190px;
   }
 
   .decision-support {
@@ -1345,19 +1355,11 @@ body[data-theme='console'] .clinical-topbar {
     flex: 1;
   }
 
-  .clinical-search {
-    order: 3;
-    width: 100%;
-    max-width: none;
-    margin: 0;
-  }
-
   .topbar-utilities {
     margin-left: auto;
   }
 
   .topbar-utilities > a.icon-button,
-  .notification-button,
   .version-pill {
     display: none;
   }

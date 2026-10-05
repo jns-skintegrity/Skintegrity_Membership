@@ -86,11 +86,14 @@ function showDashboard(user, userData) {
   const admin = isCompanyAdmin(user);
   const rawTier = userData.membershipTier || userData.tier || userData.role || 'free';
   const tier = String(rawTier).toLowerCase().trim();
+  const designation = userData.designation || userData.membershipBadge || userData.badge;
   const role = admin
     ? 'Admin • Staff Access'
-    : tier === 'premium' || tier === 'member'
-      ? 'Premium Member • Access Pending'
-      : 'Free Member';
+    : typeof designation === 'string' && designation.trim()
+      ? designation.trim()
+      : tier === 'premium' || tier === 'member'
+        ? 'Premium Member • Access Pending'
+        : 'Free Member';
   const displayName = userData.fullName || userData.name || user.email || 'Member';
   const nameElem = document.getElementById('user-display-name');
   const roleElem = document.getElementById('user-display-role');
@@ -337,11 +340,9 @@ if (dataToggle) {
     dataToggle.title = showData ? 'Return to dashboard' : 'Open admin data';
     setVisible('admin-home', !showData);
     setVisible('admin-data', showData);
-    for (const selector of ['.section-heading', '.tool-grid', '.utility-section', '.metrics-row']) {
-      document.querySelectorAll(selector).forEach((element) => {
-        if (!element.closest('#admin-data')) element.hidden = showData;
-      });
-    }
+    document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
+      element.hidden = showData;
+    });
     if (showData) await loadUsageData();
   });
 }
