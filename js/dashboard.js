@@ -73,3 +73,13 @@ if (logoutBtn) {
     }
   });
 }
+
+// Safely handle lowercase and uppercase tier names
+const rawTier = userDoc.data().membershipTier || userDoc.data().tier || "";
+const tier = rawTier.trim().toLowerCase();
+
+if (tier === "premium" || tier === "admin") {
+  // Show premium/admin features
+} else {
+  // Show free tier UI
+}
