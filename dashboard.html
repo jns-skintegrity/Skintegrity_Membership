@@ -3,105 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skintegrity Suite - Dashboard</title>
+  <meta name="theme-color" content="#0B0E14">
+  <title>Pocket-WOC | Skintegrity Suite</title>
   <link rel="stylesheet" href="css/styles.css">
   <script type="module" src="js/dashboard.js" defer></script>
 </head>
-<body class="login-body signin-page dashboard-body">
-  <div class="dashboard-container">
-    <header class="login-card dashboard-userbar">
-      <div class="dashboard-user">
-        <span class="dashboard-welcome">Logged in as</span>
-        <strong id="user-display-name">Loading user...</strong>
-        <span id="user-display-role" class="badge dashboard-role">VERIFYING ACCESS...</span>
-      </div>
-      <nav class="dashboard-actions" aria-label="Dashboard actions">
-        <a id="sora-launch" class="btn-outline dashboard-action" href="https://sora-sf-tool.vercel.app"
-           target="_blank" rel="noopener noreferrer" hidden>SORA-SF</a>
-        <a id="advisor-launch" class="btn-outline dashboard-action" href="https://treatment-advisor-2uia.vercel.app"
-           target="_blank" rel="noopener noreferrer" hidden>Treatment Advisor</a>
-        <button id="data-toggle" class="btn-outline dashboard-action" type="button"
-                aria-controls="admin-data" aria-expanded="false" hidden>Data</button>
-        <button id="logout-btn" class="btn-outline dashboard-logout" type="button">Log Out</button>
+<body class="dashboard-body" data-theme="dark">
+  <div class="clinical-shell">
+    <aside class="clinical-sidebar" aria-label="Main navigation">
+      <a class="suite-brand" href="#clinical-assessment" aria-label="SORA Clinical Suite home">
+        <span class="pulse-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M2 12h4l2.2-6 4.1 12 2.4-6H22"/></svg>
+        </span>
+        <span class="suite-brand-copy">
+          <strong>SORA Clinical Suite</strong>
+          <small>v2.4.0</small>
+        </span>
+      </a>
+
+      <div class="sidebar-kicker">WORKSPACE</div>
+      <nav class="primary-nav" aria-label="Workspace">
+        <a class="nav-item is-active" href="#clinical-assessment" data-nav-section="clinical-assessment">
+          <span class="nav-icon" aria-hidden="true">◈</span>Clinical Assessment
+        </a>
+        <a class="nav-item" href="#results-summary" data-nav-section="results-summary">
+          <span class="nav-icon" aria-hidden="true">▤</span>Results Summary
+        </a>
+        <a class="nav-item" href="#guidance-advisor" data-nav-section="guidance-advisor">
+          <span class="nav-icon" aria-hidden="true">✚</span>Guidance &amp; Advisor
+        </a>
       </nav>
-    </header>
 
-    <main>
-      <section id="admin-home" class="login-card dashboard-section" hidden>
-        <span class="dashboard-eyebrow">SKINTEGRITY SUITE</span>
-        <h1>Welcome to the Admin dashboard</h1>
-        <p>Launch your clinical tools from the banner, or choose <strong>Data</strong> to review aggregate usage.</p>
-      </section>
+      <div class="sidebar-bottom">
+        <div class="sidebar-kicker">PREFERENCES</div>
+        <button class="nav-item nav-button" id="sidebar-theme" type="button">
+          <span class="nav-icon" aria-hidden="true">◐</span><span class="nav-label">Settings &amp; Appearance</span>
+        </button>
+        <a class="nav-item" href="https://sites.google.com/d/1UC6vSYRwVS2BU0Yv2Z3YaoORSvusgvwb/p/1LA0tnCD4vpf5Wn4kf56bQGeteFeXdAdU/edit" target="_blank" rel="noopener noreferrer">
+          <span class="nav-icon" aria-hidden="true">?</span>Help &amp; Support
+        </a>
+        <button class="nav-item nav-button nav-logout" id="sidebar-logout" type="button">
+          <span class="nav-icon" aria-hidden="true">↪</span>Log Out
+        </button>
+      </div>
 
-      <section id="free-content" class="login-card dashboard-section" hidden>
-        <span class="dashboard-eyebrow">SKINTEGRITY SUITE</span>
-        <h1>Welcome to your membership portal</h1>
-        <p>Your account is active. Full Membership and Premium access are not available yet.</p>
-      </section>
+      <div class="sidebar-build">POCKET-WOC <span>•</span> SECURE WORKSPACE</div>
+    </aside>
 
-      <section id="upgrade-banner" class="login-card dashboard-upgrade" hidden>
-        <h2>Premium Membership is coming soon</h2>
-        <p>We are preparing Premium access and will share an update when it becomes available.</p>
-      </section>
+    <div class="clinical-workspace">
+      <header class="clinical-topbar">
+        <div class="breadcrumb-wrap">
+          <div class="breadcrumbs"><span>Clinical Tools</span><i>›</i><strong>SORA Assessment</strong></div>
+          <span class="case-tag">PT-8892-421 <i>—</i> Patient: J. Doe</span>
+        </div>
 
-      <section id="admin-data" class="login-card dashboard-section admin-data" hidden>
-        <div class="data-heading">
-          <div>
-            <span class="dashboard-eyebrow">ADMIN DASHBOARD</span>
-            <h1>Tool usage</h1>
-            <p class="dashboard-section-intro">Daily aggregate activity from the last 30 days. No patient identifiers, case details, or assessment answers are collected.</p>
+        <label class="clinical-search">
+          <span aria-hidden="true">⌕</span>
+          <input type="search" placeholder="Search patient, tool, or guide..." aria-label="Search patient, tool, or guide">
+          <kbd>⌘ K</kbd>
+        </label>
+
+        <div class="topbar-utilities">
+          <span class="version-pill">v4.2.0-STABLE</span>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Change theme" title="Change theme">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z"/></svg>
+          </button>
+          <button class="icon-button" id="data-toggle" type="button" aria-controls="admin-data" aria-expanded="false" aria-label="Admin data" title="Admin data" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h17M8 15l3-4 3 2 5-7"/></svg>
+          </button>
+          <a class="icon-button" href="https://sites.google.com/d/1UC6vSYRwVS2BU0Yv2Z3YaoORSvusgvwb/p/1LA0tnCD4vpf5Wn4kf56bQGeteFeXdAdU/edit" target="_blank" rel="noopener noreferrer" aria-label="Help and support" title="Help and support">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1.1-1.9 1.3-1.9 3"/><path d="M12 17.2h.01"/></svg>
+          </a>
+          <button class="icon-button notification-button" type="button" aria-label="Notifications" title="No new notifications">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+            <span class="notification-dot"></span>
+          </button>
+          <div class="profile-slot">
+            <span class="profile-avatar" id="profile-initials">—</span>
+            <span class="profile-copy">
+              <strong id="user-display-name">Loading profile…</strong>
+              <small id="user-display-role">Checking access</small>
+            </span>
           </div>
-          <button id="export-data" class="btn-outline dashboard-action" type="button" disabled>Export CSV</button>
+        </div>
+      </header>
+
+      <main class="clinical-main">
+        <div class="hero-banner" id="clinical-assessment">
+          <div class="hero-copy">
+            <div class="hero-logo-wrap">
+              <img class="hero-logo" src="images/skintegrity-logo.png" alt="Skintegrity Partners, LLC">
+            </div>
+            <div class="hero-eyebrow">CLINICAL INTELLIGENCE PLATFORM</div>
+            <h1>Skintegrity Suite</h1>
+            <p class="hero-subtitle">Pocket-WOC <span>•</span> Professional Clinical Assessment Framework</p>
+            <div class="hero-badges">
+              <span class="edition-badge"><i></i> INPATIENT EDITION</span>
+              <span class="warrior-badge"><i></i> WOUND WARRIOR</span>
+            </div>
+            <p class="hero-description">Empowering inpatient clinicians with evidence-based skin failure analysis, etiology evaluation, and automated dressing guidance to optimize patient outcomes.</p>
+          </div>
+          <aside class="decision-support">
+            <span class="decision-icon" aria-hidden="true">✳</span>
+            <div>
+              <strong>CLINICAL DECISION SUPPORT</strong>
+              <p>This tool assists clinical judgment; it does not replace professional medical advice or facility protocols.</p>
+            </div>
+          </aside>
         </div>
 
-        <div class="metric-grid" aria-live="polite">
-          <article class="metric-card">
-            <span>Assessment attempts</span>
-            <strong id="metric-starts">—</strong>
-          </article>
-          <article class="metric-card">
-            <span>Completed reviews</span>
-            <strong id="metric-completions">—</strong>
-          </article>
-          <article class="metric-card">
-            <span>Completion rate</span>
-            <strong id="metric-rate">—</strong>
-          </article>
+        <div class="section-heading" id="results-summary">
+          <div><span class="section-kicker">POCKET-WOC TOOLKIT</span><h2>Clinical tools</h2></div>
+          <span class="access-note" id="access-status">Checking your access…</span>
         </div>
 
-        <div class="analytics-card">
-          <h2>Usage by tool</h2>
-          <div class="table-scroll">
-            <table class="usage-table">
-              <thead>
-                <tr><th>Tool</th><th>Attempts</th><th>Completed</th><th>Completion rate</th></tr>
-              </thead>
+        <section class="tool-grid" aria-label="Clinical tools">
+          <article class="clinical-tool-card sora-card is-locked">
+            <div class="tool-card-top">
+              <span class="tool-icon sora-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/><circle cx="12" cy="12" r="10"/></svg>
+              </span>
+              <span class="tool-status"><i></i> CLINICAL ASSESSMENT</span>
+            </div>
+            <div class="tool-card-content">
+              <span class="tool-overline">01 / ASSESSMENT FRAMEWORK</span>
+              <h3>Pocket-WOC SORA-SF Tool</h3>
+              <p>Initiate a multi-domain assessment of skin failure (SORA-SF-CAT). Analyze visual morphology, systemic markers, and perfusion to differentiate from mechanical pressure injury.</p>
+            </div>
+            <div class="tool-card-actions">
+              <a class="tool-button button-secondary" href="https://sora-sf-tool.vercel.app" data-tool="sora-explore" data-handoff="https://sora-sf-tool.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
+                EXPLORE LIBRARY <span aria-hidden="true">↗</span>
+              </a>
+              <a class="tool-button button-primary tool-launch" id="sora-launch" href="https://sora-sf-tool.vercel.app" data-handoff="https://sora-sf-tool.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
+                INITIATE WORKFLOW <span aria-hidden="true">→</span>
+              </a>
+              <div class="access-overlay" id="sora-lock">
+                <span aria-hidden="true">⌑</span><strong>Premium Access Coming Soon</strong>
+                <small>Until memberships launch, clinical tools are available to authorized Admin accounts.</small>
+              </div>
+            </div>
+          </article>
+
+          <article class="clinical-tool-card advisor-card is-locked" id="guidance-advisor">
+            <div class="tool-card-top">
+              <span class="tool-icon advisor-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+              </span>
+              <span class="tool-status advisor-status"><i></i> GUIDANCE &amp; ADVISOR</span>
+            </div>
+            <div class="tool-card-content">
+              <span class="tool-overline">02 / WOUND CARE GUIDANCE</span>
+              <h3>Pocket-WOC Dressing &amp; Wound Advisor</h3>
+              <p>Expert guidance for choosing appropriate dressings based on current wound characteristics, exudate levels, and infection risk. Optimized for Skintegrity Suite protocols.</p>
+            </div>
+            <div class="tool-card-actions advisor-actions">
+              <a class="tool-button button-primary tool-launch" id="advisor-launch" href="https://treatment-advisor.vercel.app" data-handoff="https://treatment-advisor.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
+                LAUNCH DRESSING ADVISOR <span aria-hidden="true">→</span>
+              </a>
+              <div class="access-overlay" id="advisor-lock">
+                <span aria-hidden="true">⌑</span><strong>Premium Access Coming Soon</strong>
+                <small>Until memberships launch, clinical tools are available to authorized Admin accounts.</small>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="utility-section" aria-labelledby="utility-title">
+          <div class="section-heading utility-heading">
+            <div><span class="section-kicker">WORKSPACE SHORTCUTS</span><h2 id="utility-title">Clinical Utility Center</h2></div>
+            <span class="section-caption">Quick links and reference tools</span>
+          </div>
+          <div class="utility-grid">
+            <button class="utility-card" type="button" disabled>
+              <span class="utility-icon">⌕</span><span><strong>LOOKUP CASE ID</strong><small>Case search coming soon</small></span><b>↗</b>
+            </button>
+            <button class="utility-card" type="button" disabled>
+              <span class="utility-icon">◎</span><span><strong>COMMUNITY REVIEW</strong><small>Peer collaboration coming soon</small></span><b>↗</b>
+            </button>
+            <a class="utility-card research-card" href="https://www.skintegritypartners.com/" target="_blank" rel="noopener noreferrer">
+              <span class="utility-icon">⌘</span><span><strong>PUBLIC RESEARCH CENTER</strong><small>Explore Skintegrity resources</small></span><b>↗</b>
+            </a>
+          </div>
+        </section>
+
+        <section class="metrics-row" aria-label="Workspace status">
+          <article class="status-metric"><span class="metric-icon">◉</span><span><small>ACTIVE SESSIONS</small><strong id="active-session-status">CONNECTED</strong></span></article>
+          <article class="status-metric"><span class="metric-icon cyan">✚</span><span><small>PROTOCOLS ACTIVE</small><strong>IN-APP GUIDANCE</strong></span></article>
+          <article class="status-metric"><span class="metric-icon gold">◷</span><span><small>GUIDELINE UPDATE</small><strong>SEE TOOL CONTENT</strong></span></article>
+          <article class="status-metric"><span class="metric-icon">?</span><span><small>SUPPORT QUEUE</small><strong><a href="https://sites.google.com/d/1UC6vSYRwVS2BU0Yv2Z3YaoORSvusgvwb/p/1LA0tnCD4vpf5Wn4kf56bQGeteFeXdAdU/edit" target="_blank" rel="noopener noreferrer">CONTACT SUPPORT</a></strong></span></article>
+        </section>
+
+        <section id="admin-data" class="admin-data-panel" hidden>
+          <div class="section-heading data-heading">
+            <div><span class="section-kicker">ADMIN DASHBOARD</span><h2>Tool usage</h2>
+              <p class="dashboard-section-intro">Daily aggregate activity from the last 30 days. No patient identifiers, case details, or assessment answers are collected.</p>
+            </div>
+            <button id="export-data" class="tool-button button-secondary" type="button" disabled>Export CSV</button>
+          </div>
+          <div class="metric-grid" aria-live="polite">
+            <article class="metric-card"><span>Assessment attempts</span><strong id="metric-starts">—</strong></article>
+            <article class="metric-card"><span>Completed reviews</span><strong id="metric-completions">—</strong></article>
+            <article class="metric-card"><span>Completion rate</span><strong id="metric-rate">—</strong></article>
+          </div>
+          <div class="analytics-card">
+            <h3>Usage by tool</h3>
+            <div class="table-scroll"><table class="usage-table">
+              <thead><tr><th>Tool</th><th>Attempts</th><th>Completed</th><th>Completion rate</th></tr></thead>
               <tbody id="tool-breakdown"></tbody>
-            </table>
+            </table></div>
           </div>
-        </div>
-
-        <div class="analytics-card">
-          <h2>Daily activity</h2>
-          <p id="analytics-status" role="status">Loading aggregate usage…</p>
-          <div id="chart-wrap" class="chart-wrap" hidden>
-            <svg id="usage-chart" viewBox="0 0 720 230" role="img" aria-label="Daily tool starts and completed reviews"></svg>
-            <div class="chart-legend"><span><i class="legend-starts"></i>Started</span><span><i class="legend-completions"></i>Completed</span></div>
+          <div class="analytics-card">
+            <h3>Daily activity</h3>
+            <p id="analytics-status" role="status">Loading aggregate usage…</p>
+            <div id="chart-wrap" class="chart-wrap" hidden>
+              <svg id="usage-chart" viewBox="0 0 720 230" role="img" aria-label="Daily tool starts and completed reviews"></svg>
+              <div class="chart-legend"><span><i class="legend-starts"></i>Started</span><span><i class="legend-completions"></i>Completed</span></div>
+            </div>
           </div>
-        </div>
+          <div class="analytics-card">
+            <h3>Broad outcome categories</h3>
+            <p class="analytics-caption">Counts of generated guidance categories only; no individual assessment responses are stored.</p>
+            <ul id="category-list" class="category-list"></ul>
+          </div>
+        </section>
+      </main>
 
-        <div class="analytics-card">
-          <h2>Broad outcome categories</h2>
-          <p class="analytics-caption">Counts of generated guidance categories only; no individual assessment responses are stored.</p>
-          <ul id="category-list" class="category-list"></ul>
-        </div>
-      </section>
-    </main>
-
-    <footer class="dashboard-footer">
-      <span>SKINTEGRITY PARTNERS LLC</span>
-      <span>Clinical tools support clinician judgment and local policy.</span>
-    </footer>
+      <footer class="clinical-footer">
+        <span>SECURE SESSION</span><i>•</i><span>AGGREGATE USAGE ONLY</span><i>•</i><span>NO PATIENT IDENTIFIERS STORED</span>
+        <span class="copyright">SKINTEGRITY PARTNERS LLC © 2026</span>
+      </footer>
+    </div>
   </div>
 </body>
 </html>

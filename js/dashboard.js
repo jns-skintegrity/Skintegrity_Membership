@@ -12,7 +12,50 @@ import {
 
 const COMPANY_EMAIL_DOMAIN = '@skintegritypartners.com';
 const DATA_WINDOW_DAYS = 30;
+const THEMES = ['dark', 'light', 'console'];
 let usageRows = [];
+let signedInUser = null;
+
+function applyTheme(theme, persist = false) {
+  const selectedTheme = THEMES.includes(theme) ? theme : 'dark';
+  document.body.dataset.theme = selectedTheme;
+  const themeButton = document.getElementById('theme-toggle');
+  const sidebarThemeButton = document.getElementById('sidebar-theme');
+  const labels = {
+    dark: 'Dark theme',
+    light: 'Light theme',
+    console: 'Console theme',
+  };
+  if (themeButton) {
+    themeButton.setAttribute('aria-label', `Theme: ${labels[selectedTheme]}. Click to change theme.`);
+    themeButton.title = `Theme: ${labels[selectedTheme]}`;
+    themeButton.dataset.theme = selectedTheme;
+    const icons = {
+      dark: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z"/></svg>',
+      light: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>',
+      console: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m5 0h5"/></svg>',
+    };
+    themeButton.innerHTML = icons[selectedTheme];
+  }
+  if (sidebarThemeButton) {
+    const label = sidebarThemeButton.querySelector('.nav-label');
+    if (label) label.textContent = `Settings & Appearance · ${selectedTheme}`;
+  }
+  if (persist) {
+    try {
+      localStorage.setItem('dashboard_theme', selectedTheme);
+    } catch (error) {
+      console.error('Could not save dashboard theme preference:', error);
+    }
+  }
+}
+
+try {
+  applyTheme(localStorage.getItem('dashboard_theme') || 'dark');
+} catch (error) {
+  console.error('Could not read dashboard theme preference:', error);
+  applyTheme('dark');
+}
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -39,22 +82,60 @@ function isCompanyAdmin(user) {
 }
 
 function showDashboard(user, userData) {
+  signedInUser = user;
   const admin = isCompanyAdmin(user);
-  const role = admin ? 'admin' : 'free';
+  const rawTier = userData.membershipTier || userData.tier || userData.role || 'free';
+  const tier = String(rawTier).toLowerCase().trim();
+  const role = admin
+    ? 'Admin • Staff Access'
+    : tier === 'premium' || tier === 'member'
+      ? 'Premium Member • Access Pending'
+      : 'Free Member';
+  const displayName = userData.fullName || userData.name || user.email || 'Member';
   const nameElem = document.getElementById('user-display-name');
   const roleElem = document.getElementById('user-display-role');
+  const initialsElem = document.getElementById('profile-initials');
+  const accessStatus = document.getElementById('access-status');
 
-  if (nameElem) {
-    nameElem.textContent = userData.fullName || userData.name || user.email || 'Member';
+  if (nameElem) nameElem.textContent = displayName;
+  if (roleElem) roleElem.textContent = role;
+  if (initialsElem) {
+    initialsElem.textContent = displayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0].toUpperCase())
+      .join('');
   }
-  if (roleElem) roleElem.textContent = `${role.toUpperCase()} ACCESS`;
+  if (accessStatus) {
+    accessStatus.textContent = admin
+      ? 'Admin tools enabled'
+      : 'Clinical tool access is currently limited to authorized Admin accounts';
+  }
 
   setVisible('free-content', !admin);
   setVisible('upgrade-banner', !admin);
   setVisible('admin-home', admin);
-  setVisible('sora-launch', admin);
-  setVisible('advisor-launch', admin);
   setVisible('data-toggle', admin);
+  for (const [cardId, lockId] of [
+    ['sora-launch', 'sora-lock'],
+    ['advisor-launch', 'advisor-lock'],
+  ]) {
+    const link = document.getElementById(cardId);
+    const card = link?.closest('.clinical-tool-card');
+    setVisible(lockId, !admin);
+    if (card) card.classList.toggle('is-locked', !admin);
+    if (link) {
+      link.setAttribute('aria-disabled', String(!admin));
+      link.setAttribute('tabindex', admin ? '0' : '-1');
+    }
+  }
+
+  const exploreLink = document.querySelector('[data-tool="sora-explore"]');
+  if (exploreLink) {
+    exploreLink.setAttribute('aria-disabled', String(!admin));
+    exploreLink.setAttribute('tabindex', admin ? '0' : '-1');
+  }
 }
 
 function setVisible(id, visible) {
@@ -189,7 +270,7 @@ function renderUsageChart() {
   const y = (value) => 190 - (value * 160) / maxValue;
   svg.replaceChildren();
 
-  for (const [field, color] of [['starts', '#a64f3d'], ['completions', '#173f36']]) {
+  for (const [field, color] of [['starts', '#3b82f6'], ['completions', '#38bdf8']]) {
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
     line.setAttribute('fill', 'none');
     line.setAttribute('stroke', color);
@@ -212,7 +293,7 @@ function renderUsageChart() {
       label.setAttribute('x', String(x(index)));
       label.setAttribute('y', '218');
       label.setAttribute('text-anchor', 'middle');
-      label.setAttribute('fill', '#596a61');
+      label.setAttribute('fill', '#8190a5');
       label.setAttribute('font-size', '10');
       label.textContent = date.slice(5);
       svg.appendChild(label);
@@ -252,9 +333,15 @@ if (dataToggle) {
   dataToggle.addEventListener('click', async () => {
     const showData = dataToggle.getAttribute('aria-expanded') !== 'true';
     dataToggle.setAttribute('aria-expanded', String(showData));
-    dataToggle.textContent = showData ? 'Dashboard' : 'Data';
+    dataToggle.setAttribute('aria-label', showData ? 'Return to dashboard' : 'Open admin data');
+    dataToggle.title = showData ? 'Return to dashboard' : 'Open admin data';
     setVisible('admin-home', !showData);
     setVisible('admin-data', showData);
+    for (const selector of ['.section-heading', '.tool-grid', '.utility-section', '.metrics-row']) {
+      document.querySelectorAll(selector).forEach((element) => {
+        if (!element.closest('#admin-data')) element.hidden = showData;
+      });
+    }
     if (showData) await loadUsageData();
   });
 }
@@ -265,6 +352,75 @@ if (exportButton) exportButton.addEventListener('click', exportUsageCsv);
 const logoutButton = document.getElementById('logout-btn');
 if (logoutButton) {
   logoutButton.addEventListener('click', async () => {
+    try {
+      await signOut(auth);
+      window.location.replace('./index.html');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  });
+}
+
+const themeToggle = document.getElementById('theme-toggle');
+const sidebarThemeToggle = document.getElementById('sidebar-theme');
+function cycleTheme() {
+  const currentTheme = document.body.dataset.theme || 'dark';
+  const nextTheme = THEMES[(THEMES.indexOf(currentTheme) + 1) % THEMES.length];
+  applyTheme(nextTheme, true);
+}
+if (themeToggle) themeToggle.addEventListener('click', cycleTheme);
+if (sidebarThemeToggle) sidebarThemeToggle.addEventListener('click', cycleTheme);
+
+document.querySelectorAll('[data-handoff]').forEach((link) => {
+  link.addEventListener('click', async (event) => {
+    if (!signedInUser || link.getAttribute('aria-disabled') === 'true') {
+      event.preventDefault();
+      return;
+    }
+    event.preventDefault();
+    const targetName = `clinical-tool-${Date.now()}`;
+    const launchWindow = window.open('about:blank', targetName);
+    if (!launchWindow) {
+      window.alert('Please allow pop-ups for this site to open the clinical tool.');
+      return;
+    }
+    try {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = link.dataset.handoff;
+      form.target = targetName;
+      const token = document.createElement('input');
+      token.type = 'hidden';
+      token.name = 'idToken';
+      token.value = await signedInUser.getIdToken();
+      form.appendChild(token);
+      document.body.appendChild(form);
+      form.submit();
+      form.remove();
+    } catch (error) {
+      launchWindow.close();
+      console.error('Could not securely open the clinical tool:', error);
+      window.alert('Could not securely open the clinical tool. Please try again.');
+    }
+  });
+});
+
+document.querySelectorAll('.tool-card-actions > a:not([data-handoff])').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    if (link.getAttribute('aria-disabled') === 'true') event.preventDefault();
+  });
+});
+
+document.querySelectorAll('[data-nav-section]').forEach((link) => {
+  link.addEventListener('click', () => {
+    document.querySelectorAll('[data-nav-section]').forEach((item) => item.classList.remove('is-active'));
+    link.classList.add('is-active');
+  });
+});
+
+const logoutSidebar = document.getElementById('sidebar-logout');
+if (logoutSidebar) {
+  logoutSidebar.addEventListener('click', async () => {
     try {
       await signOut(auth);
       window.location.replace('./index.html');

@@ -14,7 +14,7 @@ const goToDashboard = () => {
 
 const toolHandoffs = {
   sora: 'https://sora-sf-tool.vercel.app/api/auth/session',
-  'treatment-advisor': 'https://treatment-advisor-2uia.vercel.app/api/auth/session',
+  'treatment-advisor': 'https://treatment-advisor.vercel.app/api/auth/session',
 };
 
 const completeToolHandoff = async (user, endpoint) => {
