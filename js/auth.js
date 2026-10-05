@@ -10,6 +10,26 @@ const goToDashboard = () => {
   window.location.replace('./dashboard.html');
 };
 
+const toolHandoffs = {
+  sora: 'https://sora-sf-tool.vercel.app/api/auth/session',
+  'treatment-advisor': 'https://treatment-advisor-2uia.vercel.app/api/auth/session',
+};
+
+const completeToolHandoff = async (user, endpoint) => {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = endpoint;
+
+  const tokenInput = document.createElement('input');
+  tokenInput.type = 'hidden';
+  tokenInput.name = 'idToken';
+  tokenInput.value = await user.getIdToken();
+  form.appendChild(tokenInput);
+
+  document.body.appendChild(form);
+  form.submit();
+};
+
 const loginForm = document.getElementById('auth-form') || document.getElementById('login-form');
 
 const validMembershipTiers = new Set(['free', 'member', 'premium', 'colleague', 'admin']);
@@ -65,7 +85,6 @@ if (loginForm) {
       const password = getValidatedPassword(passwordElem.value, 'Password');
 
       await signInWithEmailAndPassword(auth, email, password);
-      goToDashboard();
     } catch (error) {
       console.error('Login error:', error);
       alert(`Login failed: ${error.message}`);
@@ -121,6 +140,24 @@ onAuthStateChanged(auth, (user) => {
     const isLoginPage = path === '/' || path.endsWith('/index.html') || path.endsWith('/') || path.includes('index');
 
     if (isLoginPage) {
+      const authError = new URLSearchParams(window.location.search).get('authError');
+      if (authError) {
+        alert(`The clinical tool could not be opened (${authError}). Please contact support if this continues.`);
+        goToDashboard();
+        return;
+      }
+
+      const continuation = new URLSearchParams(window.location.search).get('continue');
+      const endpoint = toolHandoffs[continuation];
+      if (endpoint) {
+        completeToolHandoff(user, endpoint).catch((error) => {
+          console.error('Tool sign-in handoff error:', error);
+          alert('Could not securely open the clinical tool. Please try again.');
+          goToDashboard();
+        });
+        return;
+      }
+
       console.log('Logged in user detected on login page. Redirecting to dashboard...');
       goToDashboard();
     }
