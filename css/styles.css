@@ -26,6 +26,18 @@
 }
 
 body.login-body {
+  --bg-dark: #f4f0e6;
+  --bg-card: #fbf9f3;
+  --bg-card-input: #fffefa;
+  --border-color: #d8d4c8;
+  --text-primary: #173f36;
+  --text-secondary: #596a61;
+  --text-muted: #78847c;
+  --accent-blue: #a64f3d;
+  --accent-blue-hover: #8f4032;
+  --accent-cyan: #a64f3d;
+  --security-bg: #ebe5d8;
+  --security-text: #173f36;
   background-color: var(--bg-dark);
   color: var(--text-primary);
   min-height: 100vh;
@@ -52,7 +64,7 @@ body.login-body {
 
 /* --- Left Hero Section --- */
 .hero-section {
-  background-color: #080c14;
+  background-color: #173f36;
   border-right: 1px solid var(--border-color);
   padding: 4rem;
   display: flex;
@@ -70,7 +82,7 @@ body.login-body {
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 2.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(244, 240, 230, 0.25);
 }
 
 .hero-img {
@@ -87,12 +99,12 @@ body.login-body {
 }
 
 .highlight-text {
-  color: var(--accent-cyan);
+  color: #e7c9a8;
   font-style: italic;
 }
 
 .hero-description {
-  color: var(--text-secondary);
+  color: #e2e8df;
   font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -104,7 +116,7 @@ body.login-body {
 }
 
 .feature-list li {
-  color: var(--text-primary);
+  color: #f7f4eb;
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
   display: flex;
@@ -113,18 +125,21 @@ body.login-body {
 }
 
 .check-icon {
-  color: var(--accent-cyan);
+  color: #d6b78f;
   font-weight: bold;
 }
 
 .hero-footer {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #c3d0c6;
   letter-spacing: 0.05em;
 }
 
 /* --- Right Form Section --- */
 .form-section {
+  background:
+    radial-gradient(#d9d0bf 0.7px, transparent 0.7px) 0 0 / 18px 18px,
+    #f4f0e6;
   padding: 4rem 2rem;
   display: flex;
   align-items: center;
@@ -149,7 +164,7 @@ body.login-body {
 }
 
 .login-card {
-  background-color: var(--bg-card);
+  background-color: rgb(251 249 243 / 94%);
   border: 1px solid var(--border-color);
   padding: 2rem;
   border-radius: var(--radius);
@@ -177,7 +192,7 @@ label {
 
 .forgot-link {
   font-size: 0.75rem;
-  color: var(--accent-cyan);
+  color: #a64f3d;
   text-decoration: none;
 }
 
@@ -207,6 +222,7 @@ input[type="password"] {
 
 input:focus {
   border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgb(166 79 61 / 14%);
 }
 
 .form-checkbox {
@@ -226,7 +242,7 @@ input:focus {
 .btn-primary {
   width: 100%;
   padding: 0.75rem;
-  background-color: #1e3a8a;
+  background-color: #a64f3d;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -281,7 +297,7 @@ input:focus {
 }
 
 .technical-support a {
-  color: var(--text-muted);
+  color: #68766d;
   font-size: 0.75rem;
   text-decoration: none;
   letter-spacing: 0.05em;
@@ -291,12 +307,12 @@ input:focus {
   display: flex;
   justify-content: center;
   gap: 1.5rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid #d8d4c8;
   padding-top: 1.5rem;
 }
 
 .portal-footer a {
-  color: var(--text-muted);
+  color: #68766d;
   font-size: 0.7rem;
   text-decoration: none;
   letter-spacing: 0.05em;
