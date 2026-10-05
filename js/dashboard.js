@@ -15,31 +15,31 @@ onAuthStateChanged(auth, async (user) => {
     const userDoc = await getDoc(doc(db, "users", user.uid));
 
     if (userDoc.exists()) {
-      const userData = userDoc.data();
-
-      // Handle tier/role safely across variations (membershipTier or role, trim whitespace, lowercase)
-      const rawRole = userData.membershipTier || userData.role || 'free';
-      const role = rawRole.toString().trim().toLowerCase();
-
-      // 1. Populate user info elements in the UI
-      const nameElem = document.getElementById("user-display-name");
-      const roleElem = document.getElementById("user-display-role");
-
-      if (nameElem) nameElem.textContent = userData.fullName || userData.name || user.email.trim();
-      if (roleElem) roleElem.textContent = role.toUpperCase() + " ACCESS";
-
-      // 2. Gate UI sections based on user role/tier
-      gateDashboardContent(role);
+      showDashboard(user, userDoc.data());
     } else {
       console.warn("No Firestore profile found for user UID:", user.uid);
-      // Fallback if document missing
-      gateDashboardContent("free");
+      showDashboard(user);
     }
   } catch (error) {
     console.error("Error fetching user profile:", error);
-    gateDashboardContent("free");
+    showDashboard(user);
   }
 });
+
+function showDashboard(user, userData = {}) {
+  const isCompanyAdmin =
+    user.emailVerified &&
+    user.email?.trim().toLowerCase().endsWith("@skintegritypartners.com");
+  const rawRole = userData.membershipTier || userData.role || "free";
+  const role = isCompanyAdmin ? "admin" : rawRole.toString().trim().toLowerCase();
+  const nameElem = document.getElementById("user-display-name");
+  const roleElem = document.getElementById("user-display-role");
+
+  if (nameElem) nameElem.textContent = userData.fullName || userData.name || user.email || "Member";
+  if (roleElem) roleElem.textContent = role.toUpperCase() + " ACCESS";
+
+  gateDashboardContent(role);
+}
 
 // Helper function to toggle content visibility by role
 function gateDashboardContent(role) {
