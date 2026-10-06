@@ -96,6 +96,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   showDashboard(user, userData);
+  maybeStartVirtualTour(user.uid);
   await loadRecentToolUses(user.uid);
 });
 
@@ -1183,6 +1184,281 @@ if (logoutSidebar) {
     }
   });
 }
+
+const VIRTUAL_TOUR_STEPS = [
+  {
+    id: 'clinical-assessment',
+    target: '#nav-clinical-assessment',
+    title: 'Clinical Assessment',
+    description: 'Start here to return to the main workspace and access the clinical tools available to your account.',
+    arrow: 'left',
+  },
+  {
+    id: 'results-summary',
+    target: '#nav-results-summary',
+    title: 'Results Summary',
+    description: 'Review up to five recent completions per tool, with dates and broad result categories. Assessment answers and patient identifiers are not stored here.',
+    arrow: 'top',
+  },
+  {
+    id: 'guidance-advisor',
+    target: '#advisor-tool-title',
+    title: 'Guidance & Advisor',
+    description: 'Explore the Wound Advisor and the quick links below for workspace utilities and public research.',
+    arrow: 'top',
+  },
+  {
+    id: 'settings',
+    target: '#sidebar-theme',
+    mobileTarget: '#theme-toggle',
+    title: 'Settings',
+    description: 'Switch between dark, light, and console themes. The top-bar theme control provides the same options.',
+    arrow: 'bottom',
+  },
+  {
+    id: 'help-support',
+    target: '#sidebar-contact',
+    mobileTarget: '#contact-toggle',
+    title: 'Help & Support',
+    description: 'Open the in-suite support form for application questions. Do not include patient identifiers or protected health information.',
+    arrow: 'bottom',
+  },
+  {
+    id: 'logout',
+    target: '#sidebar-logout',
+    title: 'Log Out',
+    description: 'Sign out securely and return to the Skintegrity sign-in page.',
+    arrow: 'bottom',
+  },
+  {
+    id: 'search-bar',
+    target: '#input-search-bar',
+    title: 'Search',
+    description: 'The top-bar search field is reserved for finding tools and guides as search features are added.',
+    arrow: 'top',
+  },
+  {
+    id: 'user-profile',
+    target: '#profile-menu-toggle',
+    title: 'Your Profile',
+    description: 'View the role assigned to your account and switch to any lower-access interface view available to you.',
+    arrow: 'right',
+  },
+];
+
+const virtualTour = document.getElementById('virtual-tour');
+const tourCard = document.getElementById('tour-card');
+const tourSpotlight = document.getElementById('tour-spotlight');
+const tourTitle = document.getElementById('tour-title');
+const tourDescription = document.getElementById('tour-description');
+const tourStepCount = document.getElementById('tour-step-count');
+const tourProgress = document.getElementById('tour-progress');
+const tourArrow = document.getElementById('tour-arrow');
+const tourPrevious = document.getElementById('tour-previous');
+const tourNext = document.getElementById('tour-next');
+const tourReplay = document.getElementById('tour-replay');
+let currentTourSteps = [];
+let currentTourStepIndex = 0;
+let currentTourTarget = null;
+let tourTimer = null;
+let tourUserKey = '';
+let tourReturnFocus = null;
+
+function maybeStartVirtualTour(userId) {
+  const storageKey = `skintegrity_tour_completed_${userId}`;
+  try {
+    if (localStorage.getItem(storageKey)) return;
+  } catch (error) {
+    console.error('Could not read virtual tour preference:', error);
+  }
+  startVirtualTour(storageKey);
+}
+
+function getVisibleTourSteps() {
+  const isMobile = window.matchMedia('(max-width: 760px)').matches;
+  return VIRTUAL_TOUR_STEPS.map((step) => {
+    const selector = isMobile && step.mobileTarget ? step.mobileTarget : step.target;
+    const target = document.querySelector(selector);
+    if (!target || !target.getClientRects().length || getComputedStyle(target).visibility === 'hidden') {
+      return null;
+    }
+    return { ...step, selector };
+  }).filter(Boolean);
+}
+
+function startVirtualTour(storageKey) {
+  if (!virtualTour || !tourCard) return;
+  clearTimeout(tourTimer);
+  tourReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  tourUserKey = storageKey;
+  currentTourSteps = getVisibleTourSteps();
+  if (!currentTourSteps.length) {
+    console.error('Could not start the virtual tour because no tour targets are visible.');
+    return;
+  }
+  currentTourStepIndex = 0;
+  virtualTour.hidden = false;
+  virtualTour.setAttribute('aria-hidden', 'false');
+  setVirtualTourStep();
+}
+
+function setVirtualTourStep() {
+  clearTimeout(tourTimer);
+  const step = currentTourSteps[currentTourStepIndex];
+  if (!step) {
+    finishVirtualTour();
+    return;
+  }
+
+  document.querySelectorAll('.tour-target-active').forEach((target) => {
+    target.classList.remove('tour-target-active');
+  });
+  const quickLinks = document.getElementById('quick-links-section');
+  quickLinks?.classList.toggle('tour-quick-links-active', step.id === 'guidance-advisor');
+
+  currentTourTarget = document.querySelector(step.selector);
+  if (!currentTourTarget) {
+    console.error(`Could not find virtual tour target "${step.selector}".`);
+    finishVirtualTour();
+    return;
+  }
+  currentTourTarget.classList.add('tour-target-active');
+  tourTitle.textContent = step.title;
+  tourDescription.textContent = step.description;
+  tourStepCount.textContent = `STEP ${currentTourStepIndex + 1} OF ${currentTourSteps.length}`;
+  tourPrevious.hidden = currentTourStepIndex === 0;
+  tourNext.textContent = currentTourStepIndex === currentTourSteps.length - 1 ? 'Finish' : 'Next';
+  tourArrow.dataset.position = step.arrow;
+
+  const isVisible = currentTourTarget.getBoundingClientRect().top >= 12
+    && currentTourTarget.getBoundingClientRect().bottom <= window.innerHeight - 12;
+  if (!isVisible) currentTourTarget.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+  window.setTimeout(positionVirtualTour, isVisible ? 0 : 400);
+  tourCard.querySelector('#tour-next').focus({ preventScroll: true });
+  tourProgress.style.animation = 'none';
+  void tourProgress.offsetWidth;
+  tourProgress.style.animation = 'tour-progress 4.5s linear forwards';
+  tourTimer = window.setTimeout(() => {
+    if (currentTourStepIndex < currentTourSteps.length - 1) {
+      currentTourStepIndex += 1;
+      setVirtualTourStep();
+    } else {
+      finishVirtualTour();
+    }
+  }, 4500);
+}
+
+function positionVirtualTour() {
+  if (!virtualTour || virtualTour.hidden || !currentTourTarget || !tourCard || !tourSpotlight) return;
+  const targetRect = currentTourTarget.getBoundingClientRect();
+  const cardRect = tourCard.getBoundingClientRect();
+  const margin = 12;
+  const gap = 17;
+  let arrowPosition = tourArrow.dataset.position;
+  const hasRoomBelow = targetRect.bottom + gap + cardRect.height <= window.innerHeight - margin;
+  const hasRoomAbove = targetRect.top - gap - cardRect.height >= margin;
+  const hasRoomBeside = window.innerWidth > cardRect.width + targetRect.width + gap * 2;
+  if ((arrowPosition === 'left' || arrowPosition === 'right') && !hasRoomBeside) {
+    arrowPosition = hasRoomBelow ? 'top' : 'bottom';
+  }
+  if (arrowPosition === 'top' && !hasRoomBelow && hasRoomAbove) arrowPosition = 'bottom';
+  if (arrowPosition === 'bottom' && !hasRoomAbove && hasRoomBelow) arrowPosition = 'top';
+  tourArrow.dataset.position = arrowPosition;
+  let left = targetRect.left + (targetRect.width - cardRect.width) / 2;
+  let top = targetRect.bottom + gap;
+
+  if (arrowPosition === 'bottom') top = targetRect.top - cardRect.height - gap;
+  if (arrowPosition === 'left') {
+    left = targetRect.right + gap;
+    top = targetRect.top + (targetRect.height - cardRect.height) / 2;
+  }
+  if (arrowPosition === 'right') {
+    left = targetRect.left - cardRect.width - gap;
+    top = targetRect.top + (targetRect.height - cardRect.height) / 2;
+  }
+
+  left = Math.max(margin, Math.min(left, window.innerWidth - cardRect.width - margin));
+  top = Math.max(margin, Math.min(top, window.innerHeight - cardRect.height - margin));
+  const arrowOffset = arrowPosition === 'top' || arrowPosition === 'bottom'
+    ? Math.max(18, Math.min(targetRect.left + targetRect.width / 2 - left, cardRect.width - 18))
+    : Math.max(18, Math.min(targetRect.top + targetRect.height / 2 - top, cardRect.height - 18));
+  tourCard.style.left = `${left}px`;
+  tourCard.style.top = `${top}px`;
+  tourCard.style.setProperty('--tour-arrow-offset', `${arrowOffset}px`);
+  tourSpotlight.style.left = `${Math.max(0, targetRect.left - 6)}px`;
+  tourSpotlight.style.top = `${Math.max(0, targetRect.top - 6)}px`;
+  tourSpotlight.style.width = `${targetRect.width + 12}px`;
+  tourSpotlight.style.height = `${targetRect.height + 12}px`;
+}
+
+function finishVirtualTour() {
+  clearTimeout(tourTimer);
+  tourTimer = null;
+  if (virtualTour) {
+    virtualTour.hidden = true;
+    virtualTour.setAttribute('aria-hidden', 'true');
+  }
+  currentTourTarget?.classList.remove('tour-target-active');
+  currentTourTarget = null;
+  document.getElementById('quick-links-section')?.classList.remove('tour-quick-links-active');
+  if (tourUserKey) {
+    try {
+      localStorage.setItem(tourUserKey, 'true');
+    } catch (error) {
+      console.error('Could not save virtual tour preference:', error);
+    }
+  }
+  tourReturnFocus?.focus({ preventScroll: true });
+}
+
+if (tourReplay) {
+  tourReplay.addEventListener('click', () => {
+    const userId = signedInUser?.uid;
+    if (userId) startVirtualTour(`skintegrity_tour_completed_${userId}`);
+  });
+}
+
+tourNext?.addEventListener('click', () => {
+  if (currentTourStepIndex < currentTourSteps.length - 1) {
+    currentTourStepIndex += 1;
+    setVirtualTourStep();
+  } else {
+    finishVirtualTour();
+  }
+});
+tourPrevious?.addEventListener('click', () => {
+  if (currentTourStepIndex > 0) {
+    currentTourStepIndex -= 1;
+    setVirtualTourStep();
+  }
+});
+document.getElementById('tour-skip')?.addEventListener('click', finishVirtualTour);
+window.addEventListener('resize', positionVirtualTour);
+window.addEventListener('scroll', positionVirtualTour, true);
+document.addEventListener('keydown', (event) => {
+  if (!virtualTour || virtualTour.hidden) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    finishVirtualTour();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    tourNext?.click();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    tourPrevious?.click();
+  } else if (event.key === 'Tab') {
+    const controls = Array.from(tourCard.querySelectorAll('button:not([hidden])'));
+    const firstControl = controls[0];
+    const lastControl = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === firstControl) {
+      event.preventDefault();
+      lastControl.focus();
+    } else if (!event.shiftKey && document.activeElement === lastControl) {
+      event.preventDefault();
+      firstControl.focus();
+    }
+  }
+});
 
 const carouselStates = [];
 const carouselIntervalMs = 4500;

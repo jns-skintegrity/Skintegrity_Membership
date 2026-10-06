@@ -9,6 +9,7 @@ Static Firebase Authentication and Firestore membership portal.
 - New accounts are created with the `free` tier. Users cannot change their own tier or role in Firestore.
 - The dashboard reads `membershipTier`, `tier`, or `role` from the user's Firestore profile. Premium/member profiles and verified company-domain Admins can launch the clinical tools; Free profiles see an upgrade prompt on the main workflow buttons. Only verified company-domain Admins can open the Data view.
 - Dashboard appearance cycles through dark, light, and console themes; the selected theme is saved in browser local storage.
+- The dashboard's guided tour opens automatically the first time each signed-in account uses the workspace in a browser. Members can replay it from the Clinical Tools page; completion is remembered per account in that browser.
 
 ## Admin usage data
 

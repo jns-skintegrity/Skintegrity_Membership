@@ -23,26 +23,26 @@
 
       <div class="sidebar-kicker">WORKSPACE</div>
       <nav class="primary-nav" aria-label="Workspace">
-        <a class="nav-item is-active" href="#clinical-assessment" data-nav-section="clinical-assessment">
+        <a class="nav-item is-active" id="nav-clinical-assessment" href="#clinical-assessment" data-nav-section="clinical-assessment">
           <span class="nav-icon" aria-hidden="true">◈</span>Clinical Assessment
         </a>
-        <a class="nav-item" href="#results-summary" data-nav-section="results-summary">
+        <a class="nav-item" id="nav-results-summary" href="#results-summary" data-nav-section="results-summary">
           <span class="nav-icon" aria-hidden="true">▤</span>Results Summary
         </a>
-        <a class="nav-item" href="#guidance-advisor" data-nav-section="guidance-advisor">
+        <a class="nav-item" id="nav-guidance-advisor" href="#guidance-advisor" data-nav-section="guidance-advisor">
           <span class="nav-icon" aria-hidden="true">✚</span>Guidance &amp; Advisor
         </a>
       </nav>
 
       <div class="sidebar-bottom">
         <div class="sidebar-kicker">PREFERENCES</div>
-        <button class="nav-item nav-button" id="sidebar-theme" type="button">
+        <button class="nav-item nav-button" id="sidebar-theme" type="button" data-tour-target="settings">
           <span class="nav-icon" aria-hidden="true">◐</span><span class="nav-label">Settings</span>
         </button>
-        <button class="nav-item nav-button" id="sidebar-contact" type="button">
+        <button class="nav-item nav-button" id="sidebar-contact" type="button" data-tour-target="help-support">
           <span class="nav-icon" aria-hidden="true">?</span>Help &amp; Support
         </button>
-        <button class="nav-item nav-button nav-logout" id="sidebar-logout" type="button">
+        <button class="nav-item nav-button nav-logout" id="sidebar-logout" type="button" data-tour-target="logout">
           <span class="nav-icon" aria-hidden="true">↪</span>Log Out
         </button>
       </div>
@@ -58,7 +58,7 @@
 
         <label class="search-box">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
-          <input type="search" aria-label="Search tool or guide" placeholder="Search tool or guide...">
+          <input type="search" id="input-search-bar" aria-label="Search tool or guide" placeholder="Search tool or guide..." data-tour-target="search-bar">
           <kbd>⌘ K</kbd>
         </label>
 
@@ -77,7 +77,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1.1-1.9 1.3-1.9 3"/><path d="M12 17.2h.01"/></svg>
           </button>
           <div class="profile-menu-wrap">
-            <button class="profile-slot" id="profile-menu-toggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="profile-role-menu" aria-label="User profile menu" disabled>
+            <button class="profile-slot" id="profile-menu-toggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="profile-role-menu" aria-label="User profile menu" data-tour-target="user-profile" disabled>
               <span class="profile-avatar" id="profile-initials">—</span>
               <span class="profile-copy">
                 <strong id="user-display-name">Loading profile…</strong>
@@ -224,7 +224,7 @@
             </div>
             <div class="tool-card-content">
               <span class="tool-overline">02 / WOUND CARE GUIDANCE</span>
-              <h3>Pocket-WOC Dressing &amp; Wound Advisor</h3>
+              <h3 id="advisor-tool-title">Pocket-WOC Dressing &amp; Wound Advisor</h3>
               <p>Expert guidance for choosing appropriate dressings based on current wound characteristics, exudate levels, and infection risk. Optimized for Skintegrity Suite protocols.</p>
             </div>
             <div class="tool-card-actions advisor-actions">
@@ -241,7 +241,14 @@
           </article>
         </section>
 
-        <section class="utility-section" aria-labelledby="utility-title" data-main-dashboard>
+        <div class="tour-replay-row">
+          <span>Need a refresher on platform navigation?</span>
+          <button id="tour-replay" class="tool-button button-secondary" type="button">
+            <span aria-hidden="true">✦</span> TAKE VIRTUAL TOUR
+          </button>
+        </div>
+
+        <section class="utility-section" id="quick-links-section" aria-labelledby="utility-title" data-main-dashboard>
           <div class="section-heading utility-heading">
             <div><span class="section-kicker">WORKSPACE SHORTCUTS</span><h2 id="utility-title">Clinical Utility Center</h2></div>
             <span class="section-caption">Quick links and reference tools</span>
@@ -373,5 +380,28 @@
       </section>
     </form>
   </dialog>
+  <div class="virtual-tour" id="virtual-tour" aria-hidden="true" hidden>
+    <div class="virtual-tour-backdrop"></div>
+    <div class="virtual-tour-spotlight" id="tour-spotlight" aria-hidden="true"></div>
+    <section class="virtual-tour-card" id="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-description">
+      <span class="tour-arrow" id="tour-arrow" aria-hidden="true"></span>
+      <div class="tour-progress-copy">
+        <span id="tour-step-count">STEP 1 OF 8</span>
+        <span>AUTO-ADVANCES IN 4.5 SECONDS</span>
+      </div>
+      <h2 id="tour-title"></h2>
+      <p id="tour-description"></p>
+      <div class="tour-progress-track" role="progressbar" aria-label="Time until next tour step" aria-valuemin="0" aria-valuemax="100">
+        <span id="tour-progress"></span>
+      </div>
+      <div class="tour-controls">
+        <button id="tour-skip" class="tour-text-button" type="button">Skip tour</button>
+        <div>
+          <button id="tour-previous" class="tour-control-button" type="button">Previous</button>
+          <button id="tour-next" class="tour-control-button tour-next-button" type="button">Next</button>
+        </div>
+      </div>
+    </section>
+  </div>
 </body>
 </html>
