@@ -38,8 +38,8 @@ function applyTheme(theme, persist = false) {
     themeButton.innerHTML = icons[selectedTheme];
   }
   if (sidebarThemeButton) {
-    const label = sidebarThemeButton.querySelector('.nav-label');
-    if (label) label.textContent = `Settings & Appearance · ${selectedTheme}`;
+    sidebarThemeButton.setAttribute('aria-label', `Settings. Current theme: ${selectedTheme}. Click to change theme.`);
+    sidebarThemeButton.title = `Current theme: ${selectedTheme}`;
   }
   if (persist) {
     try {
@@ -84,17 +84,35 @@ function isCompanyAdmin(user) {
 function showDashboard(user, userData) {
   signedInUser = user;
   const admin = isCompanyAdmin(user);
-  const rawTier = userData.membershipTier || userData.tier || userData.role || 'free';
+  const rawTier = [
+    userData.membershipTier,
+    userData.tier,
+    userData.role,
+  ].find((value) => typeof value === 'string' && value.trim()) || 'free';
   const tier = String(rawTier).toLowerCase().trim();
-  const designation = userData.designation || userData.membershipBadge || userData.badge;
+  const premium = admin || tier === 'premium' || tier === 'member';
+  const assignedRole = [
+    userData.designation,
+    userData.membershipBadge,
+    userData.badge,
+    userData.role,
+  ].find((value) => (
+    typeof value === 'string' &&
+    value.trim() &&
+    !['free', 'member', 'premium', 'admin'].includes(value.toLowerCase().trim())
+  ));
   const role = admin
-    ? 'Admin • Staff Access'
-    : typeof designation === 'string' && designation.trim()
-      ? designation.trim()
-      : tier === 'premium' || tier === 'member'
-        ? 'Premium Member • Access Pending'
+    ? (assignedRole ? assignedRole.trim() : 'Admin • Staff Access')
+    : assignedRole
+      ? assignedRole.trim()
+      : premium
+        ? 'Premium Member'
         : 'Free Member';
-  const displayName = userData.fullName || userData.name || user.email || 'Member';
+  const displayName = [
+    userData.fullName,
+    userData.name,
+    user.email,
+  ].find((value) => typeof value === 'string' && value.trim())?.trim() || 'Member';
   const nameElem = document.getElementById('user-display-name');
   const roleElem = document.getElementById('user-display-role');
   const initialsElem = document.getElementById('profile-initials');
@@ -111,14 +129,11 @@ function showDashboard(user, userData) {
       .join('');
   }
   if (accessStatus) {
-    accessStatus.textContent = admin
-      ? 'Admin tools enabled'
-      : 'Clinical tool access is currently limited to authorized Admin accounts';
+    accessStatus.textContent = premium
+      ? 'Clinical tools enabled'
+      : 'Upgrade your membership to access clinical tools';
   }
 
-  setVisible('free-content', !admin);
-  setVisible('upgrade-banner', !admin);
-  setVisible('admin-home', admin);
   setVisible('data-toggle', admin);
   for (const [cardId, lockId] of [
     ['sora-launch', 'sora-lock'],
@@ -126,18 +141,12 @@ function showDashboard(user, userData) {
   ]) {
     const link = document.getElementById(cardId);
     const card = link?.closest('.clinical-tool-card');
-    setVisible(lockId, !admin);
-    if (card) card.classList.toggle('is-locked', !admin);
+    setVisible(lockId, !premium);
+    if (card) card.classList.toggle('is-locked', !premium);
     if (link) {
-      link.setAttribute('aria-disabled', String(!admin));
-      link.setAttribute('tabindex', admin ? '0' : '-1');
+      link.setAttribute('aria-disabled', String(!premium));
+      link.setAttribute('tabindex', premium ? '0' : '-1');
     }
-  }
-
-  const exploreLink = document.querySelector('[data-tool="sora-explore"]');
-  if (exploreLink) {
-    exploreLink.setAttribute('aria-disabled', String(!admin));
-    exploreLink.setAttribute('tabindex', admin ? '0' : '-1');
   }
 }
 

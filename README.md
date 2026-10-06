@@ -4,10 +4,10 @@ Static Firebase Authentication and Firestore membership portal.
 
 ## Access model
 
-- Verified `@skintegritypartners.com` accounts receive the Admin dashboard and clinical-tool shortcuts.
+- Verified `@skintegritypartners.com` accounts receive Admin access, including the dashboard's aggregate usage view and clinical-tool shortcuts.
 - Other accounts remain on the standard portal. Premium/Full Membership signup is paused until payment and entitlement verification are available.
 - New accounts are created with the `free` tier. Users cannot change their own tier or role in Firestore.
-- The Premium/Free portal presents the same clinical dashboard, but tool launches remain disabled until Premium entitlements are implemented. Only verified company-domain Admins can launch tools and open the Data view.
+- The dashboard reads `membershipTier`, `tier`, or `role` from the user's Firestore profile. Premium/member profiles and verified company-domain Admins can launch the clinical tools; Free profiles see an upgrade prompt on the main workflow buttons. Only verified company-domain Admins can open the Data view.
 - Dashboard appearance cycles through dark, light, and console themes; the selected theme is saved in browser local storage.
 
 ## Admin usage data

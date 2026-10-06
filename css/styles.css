@@ -1245,15 +1245,160 @@ body[data-theme='console'] .clinical-topbar {
   background: rgb(5 8 11 / 96%);
 }
 
+.clinical-topbar {
+  gap: 16px;
+}
+
+.search-box {
+  display: flex;
+  min-width: 140px;
+  height: 36px;
+  flex: 1 1 210px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-input);
+  color: #718097;
+}
+
+.search-box svg {
+  width: 15px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
+.search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 10px;
+}
+
+.search-box input::placeholder {
+  color: #718097;
+  opacity: 1;
+}
+
+.search-box kbd {
+  flex: 0 0 auto;
+  padding: 3px 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: #718097;
+  font-family: inherit;
+  font-size: 8px;
+}
+
+.clinical-topbar .version-pill {
+  display: inline-flex;
+}
+
+.hero-banner {
+  min-height: 232px;
+}
+
+.hero-copy h1 {
+  margin-top: 0;
+}
+
+.hero-subtitle {
+  color: #c0cada;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tool-card-actions > .tool-button {
+  flex: 0 0 auto;
+}
+
+.action-gate {
+  position: relative;
+  display: flex;
+  min-height: 58px;
+  min-width: 190px;
+  flex: 1;
+}
+
+.action-gate .tool-launch {
+  width: 100%;
+  min-height: 58px;
+}
+
+.access-overlay {
+  inset: 0;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.access-overlay strong {
+  color: #f3b552;
+  font-size: 9px;
+}
+
+.access-overlay small {
+  flex-basis: 100%;
+  max-width: none;
+  text-align: center;
+}
+
+.clinical-tool-card.is-locked .tool-card-content {
+  opacity: 1;
+  filter: none;
+}
+
+.clinical-tool-card.is-locked .action-gate > a {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.clinical-tool-card.is-locked .tool-card-actions > a[data-tool='sora-explore'] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body[data-theme='light'] .search-box {
+  border-color: #d9e1ec;
+  background: #f8fafc;
+}
+
+body[data-theme='light'] .search-box input {
+  color: #172235;
+}
+
+body[data-theme='light'] .search-box input::placeholder,
+body[data-theme='light'] .search-box kbd {
+  color: #738198;
+}
+
+body[data-theme='light'] .hero-subtitle {
+  color: #53647c;
+}
+
+body[data-theme='console'] .search-box {
+  border-radius: 3px;
+}
+
+@media (max-width: 1020px) {
+  .clinical-topbar .version-pill {
+    display: none;
+  }
+}
+
 @media (max-width: 1280px) {
   .clinical-topbar {
     gap: 12px;
     padding-right: 20px;
     padding-left: 20px;
-  }
-
-  .version-pill {
-    display: none;
   }
 
   .clinical-main {
@@ -1357,6 +1502,11 @@ body[data-theme='console'] .clinical-topbar {
 
   .topbar-utilities {
     margin-left: auto;
+  }
+
+  .search-box {
+    order: 3;
+    flex: 1 0 100%;
   }
 
   .topbar-utilities > a.icon-button,
