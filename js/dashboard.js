@@ -1,12 +1,17 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
+  limit,
   orderBy,
   query,
+  serverTimestamp,
+  Timestamp,
+  updateDoc,
   where,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -28,6 +33,12 @@ const ROLE_ORDER = ['free', 'premium', 'admin'];
 let accountRole = 'free';
 let selectedViewRole = 'free';
 let actualProfileRole = 'Free Member';
+let profileFullName = '';
+let supportTickets = [];
+let selectedTicketId = '';
+let selectedInboxStatus = 'todo';
+let selectedInboxMonth = 'all';
+let selectedInboxYear = 'all';
 
 function applyTheme(theme, persist = false) {
   const selectedTheme = THEMES.includes(theme) ? theme : 'dark';
@@ -123,6 +134,11 @@ function showDashboard(user, userData) {
       : premium
         ? 'Premium Member'
         : 'Free Member';
+  profileFullName = [
+    userData.fullName,
+    userData.name,
+    user.displayName,
+  ].find((value) => typeof value === 'string' && value.trim())?.trim() || '';
   const displayName = [
     userData.fullName,
     userData.name,
@@ -191,6 +207,7 @@ function renderDashboardAccess() {
   const premium = accountRole !== 'free' && selectedViewRole !== 'free';
   const accessStatus = document.getElementById('access-status');
   const dataToggle = document.getElementById('data-toggle');
+  const inboxToggle = document.getElementById('inbox-toggle');
 
   if (accessStatus) {
     accessStatus.textContent = premium
@@ -207,7 +224,17 @@ function renderDashboardAccess() {
       element.hidden = false;
     });
   }
+  if (!admin && inboxToggle?.getAttribute('aria-expanded') === 'true') {
+    inboxToggle.setAttribute('aria-expanded', 'false');
+    inboxToggle.setAttribute('aria-label', 'Admin inbox');
+    inboxToggle.title = 'Admin inbox';
+    setVisible('admin-inbox', false);
+    document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
+      element.hidden = false;
+    });
+  }
   setVisible('data-toggle', admin);
+  setVisible('inbox-toggle', admin);
   for (const [cardId, lockId] of [
     ['sora-launch', 'sora-lock'],
     ['advisor-launch', 'advisor-lock'],
@@ -231,6 +258,298 @@ function renderDashboardAccess() {
 function setVisible(id, visible) {
   const element = document.getElementById(id);
   if (element) element.hidden = !visible;
+}
+
+function getTicketDate(ticket) {
+  const createdAt = ticket.createdAt;
+  if (createdAt && typeof createdAt.toDate === 'function') {
+    const date = createdAt.toDate();
+    return date instanceof Date && !Number.isNaN(date.getTime()) ? date : null;
+  }
+  if (typeof createdAt === 'string' || createdAt instanceof Date) {
+    const date = new Date(createdAt);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+  return null;
+}
+
+async function loadSupportInbox() {
+  const status = document.getElementById('inbox-status');
+  if (status) status.textContent = 'Loading support inquiries…';
+
+  try {
+    const snapshot = await getDocs(query(collection(db, 'supportTickets'), orderBy('createdAt', 'desc')));
+    supportTickets = snapshot.docs.map((ticketDoc) => ({ id: ticketDoc.id, ...ticketDoc.data() }));
+    populateInboxYears();
+    renderSupportInbox();
+    if (status) status.textContent = `${supportTickets.length} support ${supportTickets.length === 1 ? 'inquiry' : 'inquiries'} loaded.`;
+  } catch (error) {
+    console.error('Could not load the Skintegrity Suite support inbox:', error);
+    supportTickets = [];
+    renderSupportInbox();
+    if (status) status.textContent = 'The inbox could not be loaded. Verify Admin access and try refreshing.';
+  }
+}
+
+function populateInboxYears() {
+  const yearSelect = document.getElementById('inbox-year');
+  if (!yearSelect) return;
+
+  const years = [...new Set(supportTickets
+    .map(getTicketDate)
+    .filter(Boolean)
+    .map((date) => String(date.getFullYear())))]
+    .sort((first, second) => Number(second) - Number(first));
+  yearSelect.replaceChildren();
+
+  const allYears = document.createElement('option');
+  allYears.value = 'all';
+  allYears.textContent = 'All Years';
+  yearSelect.appendChild(allYears);
+  for (const year of years) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    yearSelect.appendChild(option);
+  }
+
+  if (years.includes(selectedInboxYear)) yearSelect.value = selectedInboxYear;
+  else {
+    selectedInboxYear = 'all';
+    yearSelect.value = 'all';
+  }
+}
+
+function getFilteredSupportTickets() {
+  return supportTickets.filter((ticket) => {
+    if (ticket.status !== selectedInboxStatus) return false;
+    const date = getTicketDate(ticket);
+    if (!date) return false;
+    if (selectedInboxMonth !== 'all' && date.getMonth() !== Number(selectedInboxMonth)) return false;
+    return selectedInboxYear === 'all' || date.getFullYear() === Number(selectedInboxYear);
+  });
+}
+
+function renderSupportInbox() {
+  const ticketList = document.getElementById('inbox-ticket-list');
+  const detail = document.getElementById('inbox-ticket-detail');
+  if (!ticketList || !detail) return;
+
+  setText('inbox-todo-count', String(supportTickets.filter((ticket) => ticket.status === 'todo').length));
+  setText('inbox-completed-count', String(supportTickets.filter((ticket) => ticket.status === 'completed').length));
+  document.querySelectorAll('[data-inbox-status]').forEach((tab) => {
+    const active = tab.dataset.inboxStatus === selectedInboxStatus;
+    tab.classList.toggle('is-active', active);
+    tab.setAttribute('aria-selected', String(active));
+  });
+
+  const filteredTickets = getFilteredSupportTickets();
+  if (!filteredTickets.some((ticket) => ticket.id === selectedTicketId)) selectedTicketId = '';
+  ticketList.replaceChildren();
+
+  if (filteredTickets.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'inbox-empty';
+    empty.textContent = 'No inquiries match this status and date range.';
+    ticketList.appendChild(empty);
+  } else {
+    for (const ticket of filteredTickets) {
+      const button = document.createElement('button');
+      button.className = `inbox-ticket${ticket.id === selectedTicketId ? ' is-selected' : ''}`;
+      button.type = 'button';
+      button.setAttribute('aria-pressed', String(ticket.id === selectedTicketId));
+      const title = document.createElement('strong');
+      title.textContent = typeof ticket.subject === 'string' ? ticket.subject : 'Support inquiry';
+      const metadata = document.createElement('span');
+      const date = getTicketDate(ticket);
+      metadata.textContent = `${ticket.source || 'Skintegrity Suite'} · ${date
+        ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date)
+        : 'Date unavailable'}`;
+      const excerpt = document.createElement('span');
+      excerpt.textContent = typeof ticket.message === 'string' ? ticket.message.slice(0, 140) : '';
+      button.append(title, metadata, excerpt);
+      button.addEventListener('click', () => {
+        selectedTicketId = ticket.id;
+        renderSupportInbox();
+      });
+      ticketList.appendChild(button);
+    }
+  }
+
+  renderSupportTicketDetail(detail, filteredTickets.find((ticket) => ticket.id === selectedTicketId));
+}
+
+function renderSupportTicketDetail(detail, ticket) {
+  detail.replaceChildren();
+  if (!ticket) {
+    const empty = document.createElement('p');
+    empty.className = 'inbox-empty';
+    empty.textContent = 'Select an inquiry to view its details and reply.';
+    detail.appendChild(empty);
+    return;
+  }
+
+  const heading = document.createElement('div');
+  heading.className = 'inbox-detail-heading';
+  const title = document.createElement('h3');
+  title.textContent = typeof ticket.subject === 'string' ? ticket.subject : 'Support inquiry';
+  const metadata = document.createElement('p');
+  const date = getTicketDate(ticket);
+  metadata.textContent = `${ticket.senderName || ticket.senderEmail || 'Suite member'} · ${ticket.source || 'Skintegrity Suite'} · ${date
+    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: 'short' }).format(date)
+    : 'Date unavailable'}`;
+  heading.append(title, metadata);
+  detail.appendChild(heading);
+
+  const labels = document.createElement('p');
+  labels.className = 'inbox-ticket-labels';
+  labels.textContent = `${ticket.category === 'clinical' ? 'General clinical question' : 'Application support'} · ${ticket.urgency || 'low'} urgency`;
+  detail.appendChild(labels);
+
+  const message = document.createElement('p');
+  message.className = 'inbox-ticket-message';
+  message.textContent = typeof ticket.message === 'string' ? ticket.message : '';
+  detail.appendChild(message);
+
+  const replies = Array.isArray(ticket.replies) ? ticket.replies : [];
+  if (replies.length) {
+    const repliesHeading = document.createElement('h4');
+    repliesHeading.textContent = 'Replies';
+    detail.appendChild(repliesHeading);
+    const replyList = document.createElement('div');
+    replyList.className = 'inbox-replies';
+    for (const reply of replies) {
+      const replyCard = document.createElement('article');
+      const replyText = document.createElement('p');
+      replyText.textContent = typeof reply.message === 'string' ? reply.message : '';
+      const byline = document.createElement('small');
+      const replyDate = reply.createdAt && typeof reply.createdAt.toDate === 'function'
+        ? reply.createdAt.toDate()
+        : null;
+      byline.textContent = `${reply.authorEmail || 'Skintegrity Suite Admin'}${replyDate
+        ? ` · ${new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(replyDate)}`
+        : ''}`;
+      replyCard.append(replyText, byline);
+      replyList.appendChild(replyCard);
+    }
+    detail.appendChild(replyList);
+  }
+
+  const replyForm = document.createElement('form');
+  replyForm.className = 'inbox-reply-form';
+  const replyLabel = document.createElement('label');
+  replyLabel.textContent = 'Reply within the Skintegrity Suite';
+  const replyInput = document.createElement('textarea');
+  replyInput.name = 'reply';
+  replyInput.rows = 4;
+  replyInput.maxLength = 4000;
+  replyInput.required = true;
+  replyInput.placeholder = 'Write a non-identifying response…';
+  replyInput.addEventListener('input', () => replyInput.setCustomValidity(''));
+  const actions = document.createElement('div');
+  actions.className = 'inbox-detail-actions';
+  const statusButton = document.createElement('button');
+  statusButton.type = 'button';
+  statusButton.className = 'tool-button button-secondary';
+  statusButton.textContent = ticket.status === 'todo' ? 'Mark Completed' : 'Reopen';
+  statusButton.addEventListener('click', () => updateSupportTicket(ticket, {
+    status: ticket.status === 'todo' ? 'completed' : 'todo',
+  }));
+  const sendButton = document.createElement('button');
+  sendButton.className = 'tool-button button-primary';
+  sendButton.type = 'submit';
+  sendButton.textContent = 'SAVE REPLY';
+  actions.append(statusButton, sendButton);
+  replyForm.append(replyLabel, replyInput, actions);
+  replyForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const response = replyInput.value.trim();
+    if (response.length < 10) {
+      replyInput.setCustomValidity('Please enter at least 10 characters.');
+      replyInput.reportValidity();
+      return;
+    }
+    await updateSupportTicket(ticket, {
+      replies: [
+        ...replies,
+        {
+          authorId: signedInUser.uid,
+          authorEmail: signedInUser.email || '',
+          message: response,
+          createdAt: Timestamp.now(),
+        },
+      ],
+    });
+  });
+  detail.appendChild(replyForm);
+}
+
+async function updateSupportTicket(ticket, updates) {
+  const status = document.getElementById('inbox-status');
+  if (status) status.textContent = 'Saving inquiry update…';
+  try {
+    await updateDoc(doc(db, 'supportTickets', ticket.id), {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    });
+    await loadSupportInbox();
+    if (status) status.textContent = 'Inquiry updated.';
+  } catch (error) {
+    console.error('Could not update support inquiry:', error);
+    if (status) status.textContent = 'The update could not be saved. Please try again.';
+  }
+}
+
+async function submitSupportInquiry(event) {
+  event.preventDefault();
+  if (!signedInUser) {
+    window.alert('Sign in to submit a support inquiry.');
+    return;
+  }
+
+  const form = document.getElementById('support-form');
+  const status = document.getElementById('support-form-status');
+  const submit = document.getElementById('support-submit');
+  if (!form || !status || !submit) return;
+  const formData = new FormData(form);
+  const subject = String(formData.get('subject') || '').trim();
+  const message = String(formData.get('message') || '').trim();
+  const category = String(formData.get('category') || '');
+  if (subject.length < 5 || subject.length > 120 || message.length < 10 || message.length > 4000) {
+    status.textContent = 'Check the subject and message length, then try again.';
+    return;
+  }
+  if (!['clinical', 'app_support'].includes(category)) {
+    status.textContent = 'Select a valid inquiry type.';
+    return;
+  }
+
+  submit.disabled = true;
+  status.textContent = 'Sending your inquiry…';
+  try {
+    await addDoc(collection(db, 'supportTickets'), {
+      userId: signedInUser.uid,
+      senderEmail: signedInUser.email || '',
+      senderName: profileFullName || signedInUser.email || 'Suite member',
+      source: 'membership',
+      subject,
+      category,
+      urgency: 'low',
+      message,
+      createdAt: serverTimestamp(),
+      status: 'todo',
+      replies: [],
+    });
+    form.reset();
+    await loadMemberSupportTickets();
+    status.textContent = 'Your inquiry was sent to the Skintegrity Suite support inbox.';
+    window.setTimeout(() => document.getElementById('support-dialog')?.close(), 1600);
+  } catch (error) {
+    console.error('Could not submit Skintegrity Suite support inquiry:', error);
+    status.textContent = 'Your inquiry could not be sent. Please try again later.';
+  } finally {
+    submit.disabled = false;
+  }
 }
 
 async function loadRecentToolUses(userId) {
@@ -530,10 +849,16 @@ const dataToggle = document.getElementById('data-toggle');
 if (dataToggle) {
   dataToggle.addEventListener('click', async () => {
     const showData = dataToggle.getAttribute('aria-expanded') !== 'true';
+    const inboxToggle = document.getElementById('inbox-toggle');
     dataToggle.setAttribute('aria-expanded', String(showData));
     dataToggle.setAttribute('aria-label', showData ? 'Return to dashboard' : 'Open admin data');
     dataToggle.title = showData ? 'Return to dashboard' : 'Open admin data';
-    setVisible('admin-home', !showData);
+    if (inboxToggle) {
+      inboxToggle.setAttribute('aria-expanded', 'false');
+      inboxToggle.setAttribute('aria-label', 'Admin inbox');
+      inboxToggle.title = 'Admin inbox';
+    }
+    setVisible('admin-inbox', false);
     setVisible('admin-data', showData);
     setVisible('results-summary', false);
     document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
@@ -542,6 +867,139 @@ if (dataToggle) {
     if (showData) await loadUsageData();
   });
 }
+
+const inboxToggle = document.getElementById('inbox-toggle');
+if (inboxToggle) {
+  inboxToggle.addEventListener('click', async () => {
+    const showInbox = inboxToggle.getAttribute('aria-expanded') !== 'true';
+    const dataToggle = document.getElementById('data-toggle');
+    if (dataToggle) {
+      dataToggle.setAttribute('aria-expanded', 'false');
+      dataToggle.setAttribute('aria-label', 'Open admin data');
+      dataToggle.title = 'Open admin data';
+    }
+    inboxToggle.setAttribute('aria-expanded', String(showInbox));
+    inboxToggle.setAttribute('aria-label', showInbox ? 'Return to dashboard' : 'Admin inbox');
+    inboxToggle.title = showInbox ? 'Return to dashboard' : 'Admin inbox';
+    setVisible('admin-data', false);
+    setVisible('results-summary', false);
+    setVisible('admin-inbox', showInbox);
+    document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
+      element.hidden = showInbox;
+    });
+    if (showInbox) await loadSupportInbox();
+  });
+}
+
+const inboxReload = document.getElementById('inbox-reload');
+if (inboxReload) inboxReload.addEventListener('click', loadSupportInbox);
+
+document.querySelectorAll('[data-inbox-status]').forEach((tab) => {
+  tab.addEventListener('click', () => {
+    selectedInboxStatus = tab.dataset.inboxStatus;
+    selectedTicketId = '';
+    renderSupportInbox();
+  });
+});
+
+const inboxMonth = document.getElementById('inbox-month');
+if (inboxMonth) {
+  inboxMonth.addEventListener('change', () => {
+    selectedInboxMonth = inboxMonth.value;
+    selectedTicketId = '';
+    renderSupportInbox();
+  });
+}
+
+const inboxYear = document.getElementById('inbox-year');
+if (inboxYear) {
+  inboxYear.addEventListener('change', () => {
+    selectedInboxYear = inboxYear.value;
+    selectedTicketId = '';
+    renderSupportInbox();
+  });
+}
+
+const supportDialog = document.getElementById('support-dialog');
+function openSupportDialog() {
+  if (!signedInUser) {
+    window.alert('Sign in to contact Skintegrity Suite support.');
+    return;
+  }
+  supportDialog?.showModal();
+  void loadMemberSupportTickets();
+}
+
+async function loadMemberSupportTickets() {
+  const status = document.getElementById('member-support-status');
+  const list = document.getElementById('member-support-list');
+  if (!signedInUser || !status || !list) return;
+
+  status.textContent = 'Loading your inquiries…';
+  try {
+    const snapshot = await getDocs(query(
+      collection(db, 'supportTickets'),
+      where('userId', '==', signedInUser.uid),
+      limit(20)
+    ));
+    const tickets = snapshot.docs
+      .map((ticketDoc) => ({ id: ticketDoc.id, ...ticketDoc.data() }))
+      .sort((first, second) => (getTicketDate(second)?.getTime() || 0) - (getTicketDate(first)?.getTime() || 0));
+    list.replaceChildren();
+
+    if (tickets.length === 0) {
+      status.textContent = 'You have not submitted any inquiries yet.';
+      return;
+    }
+
+    status.textContent = `Showing your ${tickets.length} most recent inquiries.`;
+    for (const ticket of tickets) {
+      const card = document.createElement('article');
+      card.className = 'member-support-ticket';
+      const heading = document.createElement('div');
+      const subject = document.createElement('strong');
+      subject.textContent = ticket.subject || 'Support inquiry';
+      const date = getTicketDate(ticket);
+      const metadata = document.createElement('small');
+      metadata.textContent = `${ticket.status === 'completed' ? 'Completed' : 'To Do'}${date
+        ? ` · ${new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date)}`
+        : ''}`;
+      heading.append(subject, metadata);
+      const message = document.createElement('p');
+      message.textContent = ticket.message || '';
+      card.append(heading, message);
+      if (Array.isArray(ticket.replies)) {
+        for (const reply of ticket.replies) {
+          const replyCard = document.createElement('blockquote');
+          const replyText = document.createElement('p');
+          replyText.textContent = reply.message || '';
+          const byline = document.createElement('small');
+          byline.textContent = 'Skintegrity Suite Support';
+          replyCard.append(replyText, byline);
+          card.appendChild(replyCard);
+        }
+      }
+      list.appendChild(card);
+    }
+  } catch (error) {
+    console.error('Could not load the member support history:', error);
+    status.textContent = 'Your inquiries could not be loaded. Please try again later.';
+  }
+}
+
+for (const trigger of [
+  document.getElementById('contact-toggle'),
+  document.getElementById('sidebar-contact'),
+  document.getElementById('status-contact'),
+]) {
+  if (trigger) trigger.addEventListener('click', openSupportDialog);
+}
+
+const supportClose = document.getElementById('support-close');
+if (supportClose) supportClose.addEventListener('click', () => supportDialog?.close());
+
+const supportForm = document.getElementById('support-form');
+if (supportForm) supportForm.addEventListener('submit', submitSupportInquiry);
 
 const exportButton = document.getElementById('export-data');
 if (exportButton) exportButton.addEventListener('click', exportUsageCsv);
@@ -674,13 +1132,25 @@ document.querySelectorAll('[data-nav-section]').forEach((link) => {
         dataToggle.setAttribute('aria-label', 'Open admin data');
         dataToggle.title = 'Open admin data';
       }
+      if (inboxToggle) {
+        inboxToggle.setAttribute('aria-expanded', 'false');
+        inboxToggle.setAttribute('aria-label', 'Admin inbox');
+        inboxToggle.title = 'Admin inbox';
+      }
+      setVisible('admin-inbox', false);
     } else {
       setVisible('results-summary', false);
+      setVisible('admin-inbox', false);
       if (dataToggle?.getAttribute('aria-expanded') === 'true') {
         dataToggle.setAttribute('aria-expanded', 'false');
         dataToggle.setAttribute('aria-label', 'Open admin data');
         dataToggle.title = 'Open admin data';
         setVisible('admin-data', false);
+      }
+      if (inboxToggle?.getAttribute('aria-expanded') === 'true') {
+        inboxToggle.setAttribute('aria-expanded', 'false');
+        inboxToggle.setAttribute('aria-label', 'Admin inbox');
+        inboxToggle.title = 'Admin inbox';
       }
       document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
         element.hidden = false;

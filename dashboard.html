@@ -39,9 +39,9 @@
         <button class="nav-item nav-button" id="sidebar-theme" type="button">
           <span class="nav-icon" aria-hidden="true">◐</span><span class="nav-label">Settings</span>
         </button>
-        <a class="nav-item" href="https://www.skintegritypartners.com/contact">
+        <button class="nav-item nav-button" id="sidebar-contact" type="button">
           <span class="nav-icon" aria-hidden="true">?</span>Help &amp; Support
-        </a>
+        </button>
         <button class="nav-item nav-button nav-logout" id="sidebar-logout" type="button">
           <span class="nav-icon" aria-hidden="true">↪</span>Log Out
         </button>
@@ -70,9 +70,12 @@
           <button class="icon-button" id="data-toggle" type="button" aria-controls="admin-data" aria-expanded="false" aria-label="Admin data" title="Admin data" hidden>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h17M8 15l3-4 3 2 5-7"/></svg>
           </button>
-          <a class="icon-button" href="https://www.skintegritypartners.com/contact" aria-label="Help and support" title="Help and support">
+          <button class="icon-button" id="inbox-toggle" type="button" aria-controls="admin-inbox" aria-expanded="false" aria-label="Admin inbox" title="Admin inbox" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </button>
+          <button class="icon-button" id="contact-toggle" type="button" aria-label="Contact support" title="Contact support">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1.1-1.9 1.3-1.9 3"/><path d="M12 17.2h.01"/></svg>
-          </a>
+          </button>
           <div class="profile-menu-wrap">
             <button class="profile-slot" id="profile-menu-toggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="profile-role-menu" aria-label="User profile menu" disabled>
               <span class="profile-avatar" id="profile-initials">—</span>
@@ -260,7 +263,7 @@
           <article class="status-metric"><span class="metric-icon">◉</span><span><small>ACTIVE SESSIONS</small><strong id="active-session-status">CONNECTED</strong></span></article>
           <article class="status-metric"><span class="metric-icon cyan">✚</span><span><small>PROTOCOLS ACTIVE</small><strong>IN-APP GUIDANCE</strong></span></article>
           <article class="status-metric"><span class="metric-icon gold">◷</span><span><small>GUIDELINE UPDATE</small><strong>SEE TOOL CONTENT</strong></span></article>
-          <article class="status-metric"><span class="metric-icon">?</span><span><small>SUPPORT QUEUE</small><strong><a href="https://www.skintegritypartners.com/contact">CONTACT</a></strong></span></article>
+          <article class="status-metric"><span class="metric-icon">?</span><span><small>SUPPORT QUEUE</small><strong><button class="status-contact" id="status-contact" type="button">CONTACT</button></strong></span></article>
         </section>
 
         <section id="admin-data" class="admin-data-panel" hidden>
@@ -296,6 +299,44 @@
             <ul id="category-list" class="category-list"></ul>
           </div>
         </section>
+
+        <section id="admin-inbox" class="admin-data-panel support-inbox" aria-labelledby="support-inbox-title" hidden>
+          <div class="section-heading data-heading">
+            <div>
+              <span class="section-kicker">SKINTEGRITY SUITE SUPPORT</span>
+              <h2 id="support-inbox-title">Admin Inbox</h2>
+              <p class="dashboard-section-intro">Inquiries submitted within the authenticated Skintegrity Suite applications. Do not request or include patient identifiers or protected health information.</p>
+            </div>
+            <button id="inbox-reload" class="tool-button button-secondary" type="button">Refresh Inbox</button>
+          </div>
+          <div class="inbox-toolbar">
+            <div class="inbox-tabs" role="tablist" aria-label="Filter support inquiries by status">
+              <button class="inbox-tab is-active" id="inbox-todo-tab" type="button" role="tab" aria-selected="true" data-inbox-status="todo">To Do <span id="inbox-todo-count">0</span></button>
+              <button class="inbox-tab" id="inbox-completed-tab" type="button" role="tab" aria-selected="false" data-inbox-status="completed">Completed <span id="inbox-completed-count">0</span></button>
+            </div>
+            <div class="inbox-date-filters">
+              <label for="inbox-month">Month</label>
+              <select id="inbox-month">
+                <option value="all">All Months</option>
+                <option value="0">January</option><option value="1">February</option>
+                <option value="2">March</option><option value="3">April</option>
+                <option value="4">May</option><option value="5">June</option>
+                <option value="6">July</option><option value="7">August</option>
+                <option value="8">September</option><option value="9">October</option>
+                <option value="10">November</option><option value="11">December</option>
+              </select>
+              <label for="inbox-year">Year</label>
+              <select id="inbox-year"><option value="all">All Years</option></select>
+            </div>
+          </div>
+          <p id="inbox-status" class="inbox-status" role="status" aria-live="polite">Inbox is not loaded.</p>
+          <div class="inbox-grid">
+            <div class="inbox-ticket-list" id="inbox-ticket-list" aria-label="Support inquiries"></div>
+            <article class="inbox-ticket-detail" id="inbox-ticket-detail">
+              <p class="inbox-empty">Select an inquiry to view its details.</p>
+            </article>
+          </div>
+        </section>
       </main>
 
       <footer class="clinical-footer">
@@ -304,5 +345,33 @@
       </footer>
     </div>
   </div>
+  <dialog class="support-dialog" id="support-dialog" aria-labelledby="support-dialog-title">
+    <form id="support-form" class="support-form">
+      <div class="support-dialog-header">
+        <div>
+          <span class="section-kicker">SKINTEGRITY SUITE SUPPORT</span>
+          <h2 id="support-dialog-title">Contact support</h2>
+        </div>
+        <button class="icon-button" id="support-close" type="button" aria-label="Close contact form">×</button>
+      </div>
+      <p class="support-privacy-warning">Do not include patient names, dates of birth, medical record numbers, case details, or other protected health information. This inbox is for application support and general, non-identifying questions only.</p>
+      <label for="support-category">Inquiry type</label>
+      <select id="support-category" name="category" required>
+        <option value="app_support">Application support</option>
+        <option value="clinical">General clinical question (no patient details)</option>
+      </select>
+      <label for="support-subject">Subject</label>
+      <input id="support-subject" name="subject" type="text" minlength="5" maxlength="120" autocomplete="off" required>
+      <label for="support-message">Message</label>
+      <textarea id="support-message" name="message" rows="6" minlength="10" maxlength="4000" required></textarea>
+      <p id="support-form-status" class="support-form-status" role="status" aria-live="polite"></p>
+      <button class="tool-button button-primary" id="support-submit" type="submit">SEND TO SKINTEGRITY SUPPORT</button>
+      <section class="member-support-history" aria-labelledby="member-support-title">
+        <h3 id="member-support-title">My recent inquiries</h3>
+        <p id="member-support-status" role="status" aria-live="polite">Loading your inquiries…</p>
+        <div class="member-support-list" id="member-support-list"></div>
+      </section>
+    </form>
+  </dialog>
 </body>
 </html>

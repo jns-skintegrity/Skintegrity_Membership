@@ -9,6 +9,18 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function validSupportReply(reply) {
+      return reply is map
+        && reply.keys().hasOnly(['authorId', 'authorEmail', 'message', 'createdAt'])
+        && reply.keys().hasAll(['authorId', 'authorEmail', 'message', 'createdAt'])
+        && reply.authorId == request.auth.uid
+        && reply.authorEmail == request.auth.token.email
+        && reply.message is string
+        && reply.message.size() >= 10
+        && reply.message.size() <= 4000
+        && reply.createdAt is timestamp;
+    }
+
     function isCompanyAdmin() {
       return isSignedIn()
         && request.auth.token.email_verified == true
@@ -44,6 +56,58 @@ service cloud.firestore {
       allow get: if isOwner(userId)
         && toolId in ['sora', 'treatment-advisor'];
       allow list, create, update, delete: if false;
+    }
+
+    match /supportTickets/{ticketId} {
+      allow get: if isCompanyAdmin() || isOwner(resource.data.userId);
+      allow list: if isCompanyAdmin() || isOwner(resource.data.userId);
+
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly([
+          'userId', 'senderEmail', 'senderName', 'source', 'subject',
+          'category', 'urgency', 'message', 'createdAt', 'status', 'replies'
+        ])
+        && request.resource.data.keys().hasAll([
+          'userId', 'senderEmail', 'senderName', 'source', 'subject',
+          'category', 'urgency', 'message', 'createdAt', 'status', 'replies'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.senderEmail == request.auth.token.email
+        && request.resource.data.senderName is string
+        && request.resource.data.senderName.size() <= 120
+        && request.resource.data.source == 'membership'
+        && request.resource.data.subject is string
+        && request.resource.data.subject.size() >= 5
+        && request.resource.data.subject.size() <= 120
+        && request.resource.data.category in ['clinical', 'app_support']
+        && request.resource.data.urgency == 'low'
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 10
+        && request.resource.data.message.size() <= 4000
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.status == 'todo'
+        && request.resource.data.replies is list
+        && request.resource.data.replies.size() == 0;
+
+      allow update: if isCompanyAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'replies', 'updatedAt'])
+        && request.resource.data.updatedAt == request.time
+        && (
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+            && request.resource.data.status in ['todo', 'completed']
+          )
+          ||
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replies', 'updatedAt'])
+            && request.resource.data.replies is list
+            && request.resource.data.replies.size() == resource.data.replies.size() + 1
+            && validSupportReply(request.resource.data.replies[request.resource.data.replies.size() - 1])
+          )
+        );
+
+      allow delete: if false;
     }
 
     match /toolUsage/{dailyUsage} {

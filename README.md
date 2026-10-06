@@ -20,4 +20,10 @@ The Results Summary reads each signed-in user's last five completed uses per too
 
 The separate `toolUsage` collection remains aggregate-only and read-only to verified company-domain users from the browser.
 
+## In-suite support inbox
+
+Signed-in members can submit application-support requests or general non-identifying questions from the membership dashboard and review their 20 most recent submissions and replies there. The authenticated SORA and Wound Advisor applications submit to the same `supportTickets` collection. Verified `@skintegritypartners.com` admins can view, date-filter, reply to, and update inquiry status in the membership dashboard's Admin Inbox; replies remain in the Suite and are not emailed.
+
+Support messages can contain personal information, so users are explicitly instructed not to enter patient identifiers, case details, or protected health information. The forms do not collect patient or assessment data by design, but free-text input cannot reliably detect or prevent a user from entering it. The support collection is readable only by verified company admins and the ticket's authenticated owner. Deploy the updated Firestore rules before enabling the inbox.
+
 Deploy the Firestore rules in `firestore.rules` when deploying this dashboard.
