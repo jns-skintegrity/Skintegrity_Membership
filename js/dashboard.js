@@ -13,8 +13,17 @@ import {
 const COMPANY_EMAIL_DOMAIN = '@skintegritypartners.com';
 const DATA_WINDOW_DAYS = 30;
 const THEMES = ['dark', 'light', 'console'];
+const HISTORY_TOOLS = {
+  sora: 'SORA-SF Tool',
+  'treatment-advisor': 'Wound Advisor',
+};
 let usageRows = [];
 let signedInUser = null;
+let recentToolUses = {
+  sora: [],
+  'treatment-advisor': [],
+};
+let selectedHistoryTool = 'sora';
 
 function applyTheme(theme, persist = false) {
   const selectedTheme = THEMES.includes(theme) ? theme : 'dark';
@@ -72,6 +81,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   showDashboard(user, userData);
+  await loadRecentToolUses(user.uid);
 });
 
 function isCompanyAdmin(user) {
@@ -148,11 +158,124 @@ function showDashboard(user, userData) {
       link.setAttribute('tabindex', premium ? '0' : '-1');
     }
   }
+  document.querySelectorAll('[data-history-launch]').forEach((link) => {
+    const enabled = premium;
+    link.setAttribute('aria-disabled', String(!enabled));
+    link.setAttribute('tabindex', enabled ? '0' : '-1');
+  });
 }
 
 function setVisible(id, visible) {
   const element = document.getElementById(id);
   if (element) element.hidden = !visible;
+}
+
+async function loadRecentToolUses(userId) {
+  const status = document.getElementById('history-status');
+  if (status) status.textContent = 'Loading recent results…';
+
+  try {
+    const entries = await Promise.all(
+      Object.keys(HISTORY_TOOLS).map(async (tool) => {
+        const historySnapshot = await getDoc(doc(db, 'users', userId, 'toolHistory', tool));
+        const uses = historySnapshot.exists() ? historySnapshot.data().uses : [];
+        return [tool, Array.isArray(uses) ? uses.slice(0, 5) : []];
+      })
+    );
+    recentToolUses = Object.fromEntries(entries);
+
+    const latestUse = Object.entries(recentToolUses)
+      .flatMap(([tool, uses]) => uses.map((use) => ({ tool, date: getHistoryDate(use) })))
+      .filter((use) => use.date)
+      .sort((first, second) => second.date.getTime() - first.date.getTime())[0];
+    selectedHistoryTool = latestUse?.tool || 'sora';
+    renderRecentToolUses();
+  } catch (error) {
+    console.error('Could not load recent tool history:', error);
+    recentToolUses = { sora: [], 'treatment-advisor': [] };
+    if (status) status.textContent = 'Recent results could not be loaded. Please try again later.';
+    renderRecentToolUses();
+  }
+}
+
+function getHistoryDate(use) {
+  const timestamp = use?.completedAt;
+  if (timestamp && typeof timestamp.toDate === 'function') {
+    const date = timestamp.toDate();
+    return date instanceof Date && !Number.isNaN(date.getTime()) ? date : null;
+  }
+  return null;
+}
+
+function formatHistoryCategory(category) {
+  return category
+    .replaceAll('_', ' ')
+    .replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+}
+
+function renderRecentToolUses() {
+  const status = document.getElementById('history-status');
+  const historyList = document.getElementById('history-list');
+  const breakdown = document.getElementById('history-breakdown');
+  const toolUses = recentToolUses[selectedHistoryTool] || [];
+  const tabId = selectedHistoryTool === 'sora' ? 'history-tab-sora' : 'history-tab-advisor';
+
+  document.querySelectorAll('[data-history-tool]').forEach((tab) => {
+    const isSelected = tab.dataset.historyTool === selectedHistoryTool;
+    tab.classList.toggle('is-active', isSelected);
+    tab.setAttribute('aria-selected', String(isSelected));
+  });
+
+  const panel = document.getElementById('history-panel');
+  if (panel) panel.setAttribute('aria-labelledby', tabId);
+  if (status) {
+    status.textContent = toolUses.length
+      ? `Showing ${toolUses.length} most recent ${HISTORY_TOOLS[selectedHistoryTool]} completions.`
+      : `No completed ${HISTORY_TOOLS[selectedHistoryTool]} uses yet.`;
+  }
+
+  if (historyList) {
+    historyList.replaceChildren();
+    for (const use of toolUses) {
+      const item = document.createElement('li');
+      const date = getHistoryDate(use);
+      const time = document.createElement('time');
+      const category = document.createElement('span');
+      category.className = 'history-category';
+      category.textContent = typeof use.category === 'string'
+        ? formatHistoryCategory(use.category)
+        : 'Completed';
+      if (date) {
+        time.dateTime = date.toISOString();
+        time.textContent = new Intl.DateTimeFormat(undefined, {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        }).format(date);
+      } else {
+        time.textContent = 'Date unavailable';
+      }
+      item.append(time, category);
+      historyList.appendChild(item);
+    }
+  }
+
+  if (breakdown) {
+    breakdown.replaceChildren();
+    const categories = new Map();
+    for (const use of toolUses) {
+      const category = typeof use.category === 'string' ? formatHistoryCategory(use.category) : 'Completed';
+      categories.set(category, (categories.get(category) || 0) + 1);
+    }
+    for (const [category, count] of categories) {
+      const item = document.createElement('div');
+      const label = document.createElement('span');
+      const total = document.createElement('strong');
+      label.textContent = category;
+      total.textContent = String(count);
+      item.append(label, total);
+      breakdown.appendChild(item);
+    }
+  }
 }
 
 async function loadUsageData() {
@@ -349,6 +472,7 @@ if (dataToggle) {
     dataToggle.title = showData ? 'Return to dashboard' : 'Open admin data';
     setVisible('admin-home', !showData);
     setVisible('admin-data', showData);
+    setVisible('results-summary', false);
     document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
       element.hidden = showData;
     });
@@ -422,9 +546,44 @@ document.querySelectorAll('.tool-card-actions > a:not([data-handoff])').forEach(
 });
 
 document.querySelectorAll('[data-nav-section]').forEach((link) => {
-  link.addEventListener('click', () => {
-    document.querySelectorAll('[data-nav-section]').forEach((item) => item.classList.remove('is-active'));
-    link.classList.add('is-active');
+  link.addEventListener('click', (event) => {
+    if (link.dataset.navSection === 'results-summary') {
+      event.preventDefault();
+      setVisible('results-summary', true);
+      setVisible('admin-data', false);
+      document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
+        element.hidden = true;
+      });
+      if (dataToggle) {
+        dataToggle.setAttribute('aria-expanded', 'false');
+        dataToggle.setAttribute('aria-label', 'Open admin data');
+        dataToggle.title = 'Open admin data';
+      }
+    } else {
+      setVisible('results-summary', false);
+      if (dataToggle?.getAttribute('aria-expanded') === 'true') {
+        dataToggle.setAttribute('aria-expanded', 'false');
+        dataToggle.setAttribute('aria-label', 'Open admin data');
+        dataToggle.title = 'Open admin data';
+        setVisible('admin-data', false);
+      }
+      document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
+        element.hidden = false;
+      });
+    }
+    document.querySelectorAll('.primary-nav [data-nav-section]').forEach((item) => {
+      item.classList.toggle('is-active', item.dataset.navSection === link.dataset.navSection);
+    });
+  });
+});
+
+document.querySelectorAll('[data-history-tool]').forEach((tab) => {
+  tab.addEventListener('click', () => {
+    const selectedTool = tab.dataset.historyTool;
+    if (selectedTool in HISTORY_TOOLS) {
+      selectedHistoryTool = selectedTool;
+      renderRecentToolUses();
+    }
   });
 });
 

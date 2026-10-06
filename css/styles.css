@@ -1935,3 +1935,351 @@ body.login-body:not(.dashboard-body) {
     padding: 1.35rem;
   }
 }
+
+body.dashboard-body[data-theme='dark'] .clinical-shell * {
+  color: #fff;
+}
+
+body.dashboard-body[data-theme='light'] .clinical-shell * {
+  color: #111;
+}
+
+.dashboard-body .sidebar-kicker,
+.dashboard-body .sidebar-build,
+.dashboard-body .breadcrumbs,
+.dashboard-body .case-tag,
+.dashboard-body .search-box,
+.dashboard-body .search-box input::placeholder,
+.dashboard-body .search-box kbd,
+.dashboard-body .version-pill,
+.dashboard-body .profile-copy small,
+.dashboard-body .hero-subtitle span,
+.dashboard-body .hero-description,
+.dashboard-body .decision-support p,
+.dashboard-body .section-caption,
+.dashboard-body .access-note,
+.dashboard-body .tool-overline,
+.dashboard-body .tool-card-content p,
+.dashboard-body .access-overlay small,
+.dashboard-body .utility-card small,
+.dashboard-body .status-metric small,
+.dashboard-body .clinical-footer,
+.dashboard-body .clinical-footer .copyright {
+  color: inherit;
+}
+
+.dashboard-body .nav-item,
+.dashboard-body .search-box input,
+.dashboard-body .profile-copy strong,
+.dashboard-body .hero-subtitle,
+.dashboard-body .hero-description,
+.dashboard-body .decision-support p,
+.dashboard-body .access-note,
+.dashboard-body .section-caption,
+.dashboard-body .tool-card-content p,
+.dashboard-body .utility-card small,
+.dashboard-body .status-metric small,
+.dashboard-body .status-metric strong,
+.dashboard-body .breadcrumbs,
+.dashboard-body .case-tag {
+  font-size: max(13px, 1em);
+}
+
+.dashboard-body .nav-item {
+  font-size: 14px;
+}
+
+.dashboard-body .sidebar-kicker,
+.dashboard-body .sidebar-build,
+.dashboard-body .version-pill,
+.dashboard-body .hero-badges > span,
+.dashboard-body .tool-status,
+.dashboard-body .tool-overline,
+.dashboard-body .utility-card strong,
+.dashboard-body .clinical-footer {
+  font-size: 11px;
+}
+
+.dashboard-body .profile-copy strong {
+  font-size: 13px;
+}
+
+.dashboard-body .profile-copy small,
+.dashboard-body .utility-card small,
+.dashboard-body .status-metric small,
+.dashboard-body .status-metric strong,
+.dashboard-body .access-overlay small {
+  font-size: 12px;
+}
+
+.dashboard-body .tool-card-content h3 {
+  font-size: 19px;
+}
+
+.dashboard-body .tool-card-content p,
+.dashboard-body .hero-description,
+.dashboard-body .decision-support p {
+  line-height: 1.65;
+}
+
+.dashboard-body .tool-button {
+  min-height: 44px;
+  padding: 0 15px;
+  font-size: 12px;
+}
+
+.dashboard-body .action-gate,
+.dashboard-body .action-gate .tool-launch {
+  min-height: 66px;
+}
+
+.dashboard-body .access-overlay {
+  padding: 8px 10px;
+}
+
+.dashboard-body .access-overlay strong {
+  font-size: 12px;
+}
+
+.dashboard-body button.utility-card {
+  opacity: 1;
+}
+
+.dashboard-body .utility-card {
+  min-height: 72px;
+}
+
+.dashboard-body .status-metric {
+  min-height: 68px;
+}
+
+.dashboard-body .section-heading h2 {
+  font-size: 21px;
+}
+
+.dashboard-body .hero-copy h1 {
+  font-size: clamp(30px, 3.2vw, 40px);
+}
+
+.dashboard-body .clinical-footer {
+  min-height: 62px;
+  gap: 14px;
+}
+
+.dashboard-body .clinical-footer .copyright {
+  margin-left: auto;
+}
+
+.dashboard-body .footer-logo {
+  display: block;
+  width: 136px;
+  max-height: 48px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  object-position: right center;
+}
+
+body.dashboard-body[data-theme='light'] .button-primary {
+  border-color: #60a5fa;
+  background: #bfdbfe;
+  color: #111;
+  box-shadow: none;
+}
+
+body.dashboard-body[data-theme='light'] .button-primary:hover {
+  background: #93c5fd;
+  color: #111;
+}
+
+body.dashboard-body[data-theme='light'] .button-secondary {
+  border-color: #8998ac;
+  background: #f8fafc;
+  color: #111;
+}
+
+body.dashboard-body[data-theme='light'] .button-secondary:hover {
+  border-color: #52647c;
+  background: #e2e8f0;
+  color: #111;
+}
+
+body.dashboard-body[data-theme='light'] .access-overlay {
+  border-color: #b9c7d9;
+  background: rgb(248 250 252 / 97%);
+}
+
+body.dashboard-body[data-theme='light'] .profile-avatar {
+  border-color: #93c5fd;
+  background: #e0f2fe;
+}
+
+body.dashboard-body[data-theme='light'] .decision-support {
+  border-color: #d97706;
+  background: linear-gradient(145deg, #ffedd5, #fff 72%);
+}
+
+body.dashboard-body[data-theme='light'] .utility-card,
+body.dashboard-body[data-theme='light'] .status-metric {
+  background: #fff;
+}
+
+.dashboard-body .clinical-footer .footer-logo {
+  color: initial;
+}
+
+.dashboard-body .search-box input::placeholder {
+  opacity: 1;
+}
+
+body.dashboard-body[data-theme='dark'] .search-box input::placeholder {
+  color: #fff;
+}
+
+body.dashboard-body[data-theme='light'] .search-box input::placeholder {
+  color: #111;
+}
+
+.dashboard-body .recent-results-panel {
+  margin: 27px auto;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.dashboard-body .results-heading {
+  align-items: center;
+  margin: 0 0 20px;
+}
+
+.dashboard-body .results-heading p {
+  max-width: 760px;
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.dashboard-body .history-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-body .history-tab {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-raised);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-body .history-tab.is-active {
+  border-color: var(--blue-bright);
+  background: rgb(37 99 235 / 17%);
+}
+
+.dashboard-body .history-status {
+  margin: 18px 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dashboard-body .history-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dashboard-body .history-breakdown > div {
+  display: flex;
+  min-width: 180px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-raised);
+  font-size: 13px;
+}
+
+.dashboard-body .history-breakdown strong {
+  font-size: 16px;
+}
+
+.dashboard-body .history-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-body .history-list li {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-raised);
+}
+
+.dashboard-body .history-list time,
+.dashboard-body .history-category {
+  font-size: 14px;
+}
+
+.dashboard-body .history-category {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.dashboard-body .history-launch-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.dashboard-body .history-launch-links .tool-button {
+  min-width: 220px;
+}
+
+@media (max-width: 760px) {
+  .dashboard-body .clinical-footer {
+    min-height: 62px;
+  }
+
+  .dashboard-body .clinical-footer .copyright {
+    width: auto;
+    margin-left: 0;
+  }
+
+  .dashboard-body .footer-logo {
+    margin-left: auto;
+  }
+
+  .dashboard-body .recent-results-panel {
+    margin: 14px auto;
+    padding: 16px;
+  }
+
+  .dashboard-body .results-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-body .history-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

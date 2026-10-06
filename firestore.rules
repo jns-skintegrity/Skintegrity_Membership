@@ -40,6 +40,12 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /users/{userId}/toolHistory/{toolId} {
+      allow get: if isOwner(userId)
+        && toolId in ['sora', 'treatment-advisor'];
+      allow list, create, update, delete: if false;
+    }
+
     match /toolUsage/{dailyUsage} {
       allow get, list: if isCompanyAdmin();
       allow create, update, delete: if false;

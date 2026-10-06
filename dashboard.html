@@ -39,7 +39,7 @@
         <button class="nav-item nav-button" id="sidebar-theme" type="button">
           <span class="nav-icon" aria-hidden="true">◐</span><span class="nav-label">Settings</span>
         </button>
-        <a class="nav-item" href="https://sites.google.com/d/1UC6vSYRwVS2BU0Yv2Z3YaoORSvusgvwb/p/1LA0tnCD4vpf5Wn4kf56bQGeteFeXdAdU/edit" target="_blank" rel="noopener noreferrer">
+        <a class="nav-item" href="https://www.skintegritypartners.com/contact">
           <span class="nav-icon" aria-hidden="true">?</span>Help &amp; Support
         </a>
         <button class="nav-item nav-button nav-logout" id="sidebar-logout" type="button">
@@ -54,12 +54,11 @@
       <header class="clinical-topbar">
         <div class="breadcrumb-wrap">
           <div class="breadcrumbs"><span>Clinical Tools</span><i aria-hidden="true">›</i><strong>SORA Assessment</strong></div>
-          <span class="case-tag">PT-8892-421 <i>—</i> Patient: J. Doe</span>
         </div>
 
         <label class="search-box">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
-          <input type="search" aria-label="Search patient, tool, or guide" placeholder="Search patient, tool, or guide...">
+          <input type="search" aria-label="Search tool or guide" placeholder="Search tool or guide...">
           <kbd>⌘ K</kbd>
         </label>
 
@@ -71,13 +70,9 @@
           <button class="icon-button" id="data-toggle" type="button" aria-controls="admin-data" aria-expanded="false" aria-label="Admin data" title="Admin data" hidden>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h17M8 15l3-4 3 2 5-7"/></svg>
           </button>
-          <a class="icon-button" href="https://sites.google.com/d/1UC6vSYRwVS2BU0Yv2Z3YaoORSvusgvwb/p/1LA0tnCD4vpf5Wn4kf56bQGeteFeXdAdU/edit" target="_blank" rel="noopener noreferrer" aria-label="Help and support" title="Help and support">
+          <a class="icon-button" href="https://www.skintegritypartners.com/contact" aria-label="Help and support" title="Help and support">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1.1-1.9 1.3-1.9 3"/><path d="M12 17.2h.01"/></svg>
           </a>
-          <button class="icon-button" type="button" aria-label="Notifications" title="Notifications">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
-            <span class="notification-dot" aria-hidden="true"></span>
-          </button>
           <div class="profile-slot">
             <span class="profile-avatar" id="profile-initials">—</span>
             <span class="profile-copy">
@@ -108,7 +103,31 @@
           </aside>
         </div>
 
-        <div class="section-heading" id="results-summary" data-main-dashboard>
+        <section class="recent-results-panel" id="results-summary" aria-labelledby="recent-results-title" hidden>
+          <div class="section-heading results-heading">
+            <div>
+              <span class="section-kicker">YOUR RECENT ACTIVITY</span>
+              <h2 id="recent-results-title">Recent tool results</h2>
+              <p>Review up to five recent completions per tool. Only completion dates and broad result categories are saved here; assessment answers and patient identifiers are not stored.</p>
+            </div>
+            <a class="tool-button button-secondary results-back" href="#clinical-assessment" data-nav-section="clinical-assessment">BACK TO CLINICAL TOOLS</a>
+          </div>
+          <div class="history-tabs" role="tablist" aria-label="Choose a tool's recent results">
+            <button class="history-tab is-active" id="history-tab-sora" type="button" role="tab" aria-selected="true" aria-controls="history-panel" data-history-tool="sora">SORA-SF Tool</button>
+            <button class="history-tab" id="history-tab-advisor" type="button" role="tab" aria-selected="false" aria-controls="history-panel" data-history-tool="treatment-advisor">Wound Advisor</button>
+          </div>
+          <p class="history-status" id="history-status" role="status" aria-live="polite">Loading recent results…</p>
+          <div class="history-results" id="history-panel" role="tabpanel" aria-labelledby="history-tab-sora">
+            <div class="history-breakdown" id="history-breakdown" aria-label="Breakdown of recent result categories"></div>
+            <ol class="history-list" id="history-list"></ol>
+          </div>
+          <div class="history-launch-links">
+            <a class="tool-button button-primary" href="https://sora-sf-tool.vercel.app" data-handoff="https://sora-sf-tool.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1" data-history-launch="sora">LAUNCH SORA DASHBOARD <span aria-hidden="true">→</span></a>
+            <a class="tool-button button-primary" href="https://treatment-advisor.vercel.app" data-handoff="https://treatment-advisor.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1" data-history-launch="treatment-advisor">LAUNCH WOUND ADVISOR <span aria-hidden="true">→</span></a>
+          </div>
+        </section>
+
+        <div class="section-heading" data-main-dashboard>
           <div><span class="section-kicker">POCKET-WOC TOOLKIT</span><h2>Clinical tools</h2></div>
           <span class="access-note" id="access-status">Checking your access…</span>
         </div>
@@ -132,7 +151,7 @@
               </a>
               <div class="action-gate">
                 <a class="tool-button button-primary tool-launch" id="sora-launch" href="https://sora-sf-tool.vercel.app" data-handoff="https://sora-sf-tool.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
-                  INITIATE WORKFLOW <span aria-hidden="true">→</span>
+                  LAUNCH DASHBOARD <span aria-hidden="true">→</span>
                 </a>
                 <div class="access-overlay" id="sora-lock">
                   <span aria-hidden="true">⌑</span><strong>Upgrade to Access</strong>
@@ -157,7 +176,7 @@
             <div class="tool-card-actions advisor-actions">
               <div class="action-gate">
                 <a class="tool-button button-primary tool-launch" id="advisor-launch" href="https://treatment-advisor.vercel.app" data-handoff="https://treatment-advisor.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
-                  LAUNCH DRESSING ADVISOR <span aria-hidden="true">→</span>
+                  LAUNCH DASHBOARD <span aria-hidden="true">→</span>
                 </a>
                 <div class="access-overlay" id="advisor-lock">
                   <span aria-hidden="true">⌑</span><strong>Upgrade to Access</strong>
@@ -190,7 +209,7 @@
           <article class="status-metric"><span class="metric-icon">◉</span><span><small>ACTIVE SESSIONS</small><strong id="active-session-status">CONNECTED</strong></span></article>
           <article class="status-metric"><span class="metric-icon cyan">✚</span><span><small>PROTOCOLS ACTIVE</small><strong>IN-APP GUIDANCE</strong></span></article>
           <article class="status-metric"><span class="metric-icon gold">◷</span><span><small>GUIDELINE UPDATE</small><strong>SEE TOOL CONTENT</strong></span></article>
-          <article class="status-metric"><span class="metric-icon">?</span><span><small>SUPPORT QUEUE</small><strong><a href="https://sites.google.com/d/1UC6vSYRwVS2BU0Yv2Z3YaoORSvusgvwb/p/1LA0tnCD4vpf5Wn4kf56bQGeteFeXdAdU/edit" target="_blank" rel="noopener noreferrer">CONTACT SUPPORT</a></strong></span></article>
+          <article class="status-metric"><span class="metric-icon">?</span><span><small>SUPPORT QUEUE</small><strong><a href="https://www.skintegritypartners.com/contact">CONTACT</a></strong></span></article>
         </section>
 
         <section id="admin-data" class="admin-data-panel" hidden>
@@ -229,8 +248,8 @@
       </main>
 
       <footer class="clinical-footer">
-        <span>HIPAA COMPLIANT</span><i>•</i><span>ISO 27001 CERTIFIED</span><i>•</i><span>ENCRYPTION V2.0</span>
         <span class="copyright">SKINTEGRITY PARTNERS LLC © 2026</span>
+        <img class="footer-logo" src="images/skintegrity-logo.png" alt="Skintegrity Partners, LLC">
       </footer>
     </div>
   </div>

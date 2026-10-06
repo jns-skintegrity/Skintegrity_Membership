@@ -14,6 +14,10 @@ Static Firebase Authentication and Firestore membership portal.
 
 The Admin dashboard's Data view reads daily aggregate documents from Firestore's `toolUsage` collection. It displays assessment attempts, completed reviews, completion rate, daily trends, and broad outcome categories for the last 30 days. It supports CSV export.
 
-The clinical tools write only daily counters and allowlisted broad categories through authenticated server routes. They do not send assessment answers, patient identifiers, names, or case details to this collection. The collection is read-only to verified company-domain users from the browser; only the server-side tool routes can write it.
+## Personal recent results
+
+The Results Summary reads each signed-in user's last five completed uses per tool from `users/{uid}/toolHistory/{tool}`. Each entry contains only a completion timestamp and an allowlisted broad result category. Assessment answers, free text, patient identifiers, names, and case details are not stored. Only the authenticated owner can read their history; the server-side clinical tool routes write it.
+
+The separate `toolUsage` collection remains aggregate-only and read-only to verified company-domain users from the browser.
 
 Deploy the Firestore rules in `firestore.rules` when deploying this dashboard.
