@@ -24,6 +24,10 @@ let recentToolUses = {
   'treatment-advisor': [],
 };
 let selectedHistoryTool = 'sora';
+const ROLE_ORDER = ['free', 'premium', 'admin'];
+let accountRole = 'free';
+let selectedViewRole = 'free';
+let actualProfileRole = 'Free Member';
 
 function applyTheme(theme, persist = false) {
   const selectedTheme = THEMES.includes(theme) ? theme : 'dark';
@@ -101,6 +105,7 @@ function showDashboard(user, userData) {
   ].find((value) => typeof value === 'string' && value.trim()) || 'free';
   const tier = String(rawTier).toLowerCase().trim();
   const premium = admin || tier === 'premium' || tier === 'member';
+  accountRole = admin ? 'admin' : premium ? 'premium' : 'free';
   const assignedRole = [
     userData.designation,
     userData.membershipBadge,
@@ -111,7 +116,7 @@ function showDashboard(user, userData) {
     value.trim() &&
     !['free', 'member', 'premium', 'admin'].includes(value.toLowerCase().trim())
   ));
-  const role = admin
+  actualProfileRole = admin
     ? (assignedRole ? assignedRole.trim() : 'Admin • Staff Access')
     : assignedRole
       ? assignedRole.trim()
@@ -124,12 +129,14 @@ function showDashboard(user, userData) {
     user.email,
   ].find((value) => typeof value === 'string' && value.trim())?.trim() || 'Member';
   const nameElem = document.getElementById('user-display-name');
-  const roleElem = document.getElementById('user-display-role');
   const initialsElem = document.getElementById('profile-initials');
-  const accessStatus = document.getElementById('access-status');
+  const profileMenuToggle = document.getElementById('profile-menu-toggle');
 
   if (nameElem) nameElem.textContent = displayName;
-  if (roleElem) roleElem.textContent = role;
+  if (profileMenuToggle) {
+    profileMenuToggle.disabled = false;
+    profileMenuToggle.setAttribute('aria-label', `User profile menu for ${displayName}`);
+  }
   if (initialsElem) {
     initialsElem.textContent = displayName
       .split(/\s+/)
@@ -138,12 +145,68 @@ function showDashboard(user, userData) {
       .map((part) => part[0].toUpperCase())
       .join('');
   }
+  const allowedRoles = ROLE_ORDER.filter((role) => ROLE_ORDER.indexOf(role) <= ROLE_ORDER.indexOf(accountRole));
+  try {
+    const savedViewRole = sessionStorage.getItem(`dashboard_view_role_${user.uid}`);
+    selectedViewRole = allowedRoles.includes(savedViewRole) ? savedViewRole : accountRole;
+  } catch (error) {
+    console.error('Could not read saved interface view:', error);
+    selectedViewRole = accountRole;
+  }
+
+  document.querySelectorAll('[data-view-role]').forEach((option) => {
+    option.hidden = !allowedRoles.includes(option.dataset.viewRole);
+  });
+  updateRoleSwitcher(selectedViewRole);
+
+  renderDashboardAccess();
+}
+
+function updateRoleSwitcher(viewRole) {
+  selectedViewRole = viewRole;
+  const roleElem = document.getElementById('user-display-role');
+  if (roleElem) {
+    roleElem.textContent = selectedViewRole === accountRole
+      ? actualProfileRole
+      : roleOptionLabel(selectedViewRole);
+  }
+  const profileMenuToggle = document.getElementById('profile-menu-toggle');
+  if (profileMenuToggle) {
+    const name = document.getElementById('user-display-name')?.textContent || 'user';
+    profileMenuToggle.setAttribute('aria-label', `${name}. ${roleOptionLabel(selectedViewRole)}. Switch interface view.`);
+  }
+  document.querySelectorAll('[data-view-role]').forEach((option) => {
+    option.setAttribute('aria-checked', String(option.dataset.viewRole === selectedViewRole));
+  });
+}
+
+function roleOptionLabel(role) {
+  if (role === 'admin') return 'Admin • Staff Access';
+  if (role === 'premium') return 'Premium Member';
+  return 'Free Tier';
+}
+
+function renderDashboardAccess() {
+  const admin = accountRole === 'admin' && selectedViewRole === 'admin';
+  const premium = accountRole !== 'free' && selectedViewRole !== 'free';
+  const accessStatus = document.getElementById('access-status');
+  const dataToggle = document.getElementById('data-toggle');
+
   if (accessStatus) {
     accessStatus.textContent = premium
       ? 'Clinical tools enabled'
       : 'Upgrade your membership to access clinical tools';
   }
 
+  if (!admin && dataToggle?.getAttribute('aria-expanded') === 'true') {
+    dataToggle.setAttribute('aria-expanded', 'false');
+    dataToggle.setAttribute('aria-label', 'Open admin data');
+    dataToggle.title = 'Open admin data';
+    setVisible('admin-data', false);
+    document.querySelectorAll('[data-main-dashboard]').forEach((element) => {
+      element.hidden = false;
+    });
+  }
   setVisible('data-toggle', admin);
   for (const [cardId, lockId] of [
     ['sora-launch', 'sora-lock'],
@@ -504,6 +567,58 @@ function cycleTheme() {
 }
 if (themeToggle) themeToggle.addEventListener('click', cycleTheme);
 if (sidebarThemeToggle) sidebarThemeToggle.addEventListener('click', cycleTheme);
+
+const profileMenuToggle = document.getElementById('profile-menu-toggle');
+const profileRoleMenu = document.getElementById('profile-role-menu');
+
+function closeProfileMenu(returnFocus = false) {
+  if (!profileRoleMenu || profileRoleMenu.hidden) return;
+  profileRoleMenu.hidden = true;
+  if (profileMenuToggle) profileMenuToggle.setAttribute('aria-expanded', 'false');
+  if (returnFocus) profileMenuToggle?.focus();
+}
+
+if (profileMenuToggle && profileRoleMenu) {
+  profileMenuToggle.addEventListener('click', () => {
+    const isOpen = profileMenuToggle.getAttribute('aria-expanded') === 'true';
+    profileRoleMenu.hidden = isOpen;
+    profileMenuToggle.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  document.querySelectorAll('[data-view-role]').forEach((option) => {
+    option.addEventListener('click', () => {
+      const requestedRole = option.dataset.viewRole;
+      const allowed = ROLE_ORDER.includes(requestedRole) &&
+        ROLE_ORDER.indexOf(requestedRole) <= ROLE_ORDER.indexOf(accountRole);
+      if (!allowed || !signedInUser) {
+        console.error('Blocked an interface view not available to the signed-in account.');
+        return;
+      }
+
+      if (document.getElementById('data-toggle')?.getAttribute('aria-expanded') === 'true') {
+        document.getElementById('data-toggle').click();
+      }
+      updateRoleSwitcher(requestedRole);
+      try {
+        sessionStorage.setItem(`dashboard_view_role_${signedInUser.uid}`, requestedRole);
+      } catch (error) {
+        console.error('Could not save selected interface view:', error);
+      }
+      renderDashboardAccess();
+      closeProfileMenu(true);
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!profileRoleMenu.hidden && !profileRoleMenu.contains(event.target) && !profileMenuToggle.contains(event.target)) {
+      closeProfileMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeProfileMenu(true);
+  });
+}
 
 document.querySelectorAll('[data-handoff]').forEach((link) => {
   link.addEventListener('click', async (event) => {
