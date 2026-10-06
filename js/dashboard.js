@@ -598,3 +598,87 @@ if (logoutSidebar) {
     }
   });
 }
+
+const carouselStates = [];
+const carouselIntervalMs = 4500;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function setCarouselSlide(state, selectedIndex) {
+  state.index = selectedIndex;
+  state.slides.forEach((slide, index) => {
+    const active = index === selectedIndex;
+    slide.classList.toggle('is-active', active);
+    slide.setAttribute('aria-hidden', String(!active));
+  });
+  state.dots.forEach((dot, index) => {
+    const active = index === selectedIndex;
+    dot.classList.toggle('is-active', active);
+    dot.setAttribute('aria-pressed', String(active));
+  });
+}
+
+function startCarousel(state) {
+  if (state.timer || state.paused || document.hidden || reduceMotion.matches) return;
+  state.timer = window.setInterval(() => {
+    setCarouselSlide(state, (state.index + 1) % state.slides.length);
+  }, carouselIntervalMs);
+}
+
+function stopCarousel(state) {
+  if (!state.timer) return;
+  window.clearInterval(state.timer);
+  state.timer = null;
+}
+
+document.querySelectorAll('[data-carousel]').forEach((track) => {
+  const slides = Array.from(track.querySelectorAll('.carousel-slide'));
+  const container = track.closest('[data-carousel-container]');
+  const card = track.closest('.clinical-tool-card');
+  const dots = Array.from(container?.querySelectorAll('.carousel-dot') || []);
+  if (!card || slides.length < 2 || slides.length !== dots.length) {
+    console.error(`Carousel "${track.dataset.carousel}" has incomplete slides or indicators.`);
+    return;
+  }
+
+  const state = { card, slides, dots, index: 0, timer: null, paused: false };
+  carouselStates.push(state);
+
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => setCarouselSlide(state, index));
+  });
+
+  card.addEventListener('pointerenter', () => {
+    state.paused = true;
+    stopCarousel(state);
+  });
+  card.addEventListener('pointerleave', () => {
+    state.paused = false;
+    startCarousel(state);
+  });
+  card.addEventListener('focusin', () => {
+    state.paused = true;
+    stopCarousel(state);
+  });
+  card.addEventListener('focusout', (event) => {
+    if (!card.contains(event.relatedTarget)) {
+      state.paused = false;
+      startCarousel(state);
+    }
+  });
+
+  startCarousel(state);
+});
+
+document.addEventListener('visibilitychange', () => {
+  carouselStates.forEach((state) => {
+    if (document.hidden) stopCarousel(state);
+    else startCarousel(state);
+  });
+});
+
+reduceMotion.addEventListener('change', () => {
+  carouselStates.forEach((state) => {
+    if (reduceMotion.matches) stopCarousel(state);
+    else startCarousel(state);
+  });
+});
