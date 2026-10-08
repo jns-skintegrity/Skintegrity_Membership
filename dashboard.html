@@ -263,26 +263,36 @@
         <section class="utility-section" id="quick-links-section" aria-labelledby="utility-title" data-main-dashboard>
           <div class="section-heading utility-heading">
             <div><span class="section-kicker">WORKSPACE SHORTCUTS</span><h2 id="utility-title">Clinical Utility Center</h2></div>
-            <span class="section-caption">Quick links and reference tools</span>
+            <div class="utility-heading-links">
+              <span class="section-caption">Quick links and reference tools</span>
+              <a class="utility-card research-card utility-research-link" href="https://www.skintegritypartners.com/" target="_blank" rel="noopener noreferrer">
+                <span class="utility-icon">⌘</span><span><strong>PUBLIC RESEARCH CENTER</strong><small>Explore Skintegrity resources</small></span><b aria-hidden="true">↗</b>
+              </a>
+            </div>
           </div>
-          <div class="utility-grid">
-            <button class="utility-card" type="button" disabled>
-              <span class="utility-icon">⌕</span><span><strong>LOOKUP CASE ID</strong><small>Case search coming soon</small></span><b>↗</b>
-            </button>
-            <button class="utility-card" type="button" disabled>
-              <span class="utility-icon">◎</span><span><strong>COMMUNITY REVIEW</strong><small>Peer collaboration coming soon</small></span><b>↗</b>
-            </button>
-            <a class="utility-card research-card" href="https://www.skintegritypartners.com/" target="_blank" rel="noopener noreferrer">
-              <span class="utility-icon">⌘</span><span><strong>PUBLIC RESEARCH CENTER</strong><small>Explore Skintegrity resources</small></span><b>↗</b>
-            </a>
+          <div class="utility-carousel" data-carousel-container role="region" aria-roledescription="carousel" aria-label="Clinical utility shortcuts">
+            <div class="utility-carousel-track" data-carousel="utilities">
+              <button class="utility-card utility-carousel-slide is-active" type="button" disabled aria-hidden="false">
+                <span class="utility-icon">⌕</span><span><strong>LOOKUP CASE ID</strong><small>Case search coming soon</small></span><b aria-hidden="true">↗</b>
+              </button>
+              <button class="utility-card utility-carousel-slide" type="button" disabled aria-hidden="true">
+                <span class="utility-icon">◎</span><span><strong>COMMUNITY REVIEW</strong><small>Peer collaboration coming soon</small></span><b aria-hidden="true">↗</b>
+              </button>
+              <div class="utility-card utility-carousel-slide" role="group" aria-label="Support Queue" aria-hidden="true">
+                <span class="utility-icon">?</span><span><strong>SUPPORT QUEUE</strong><small><button class="status-contact" id="status-contact" type="button">CONTACT</button></small></span><b aria-hidden="true">↗</b>
+              </div>
+            </div>
+            <div class="carousel-dots" role="group" aria-label="Choose a utility shortcut">
+              <button class="carousel-dot is-active" type="button" aria-label="Show Lookup Case ID" aria-pressed="true"></button>
+              <button class="carousel-dot" type="button" aria-label="Show Community Review" aria-pressed="false"></button>
+              <button class="carousel-dot" type="button" aria-label="Show Support Queue" aria-pressed="false"></button>
+            </div>
           </div>
         </section>
 
         <section class="metrics-row" aria-label="Workspace status" data-main-dashboard>
           <article class="status-metric"><span><small>ACTIVE SESSIONS</small><strong id="active-session-status">CONNECTED</strong></span></article>
           <article class="status-metric"><span><small>PROTOCOLS ACTIVE</small><strong>IN-APP GUIDANCE</strong></span></article>
-          <article class="status-metric"><span class="metric-icon gold">◷</span><span><small>GUIDELINE UPDATE</small><strong>SEE TOOL CONTENT</strong></span></article>
-          <article class="status-metric"><span class="metric-icon">?</span><span><small>SUPPORT QUEUE</small><strong><button class="status-contact" id="status-contact" type="button">CONTACT</button></strong></span></article>
         </section>
 
         <section id="admin-data" class="admin-data-panel" hidden>
@@ -366,6 +376,7 @@
         <span class="copyright">SKINTEGRITY PARTNERS LLC © 2026</span>
         <img class="footer-logo" src="images/skintegrity-logo.png" alt="Skintegrity Partners, LLC">
       </footer>
+      <p class="clinical-disclaimer"><strong>DISCLAIMER:</strong> The information and educational content provided by Skintegrity Partners, LLC is intended for educational and informational purposes only. Skintegrity Partners, LLC provides training, education, and consulting services to healthcare professionals and organizations. Skintegrity Partners, LLC does not provide direct patient care, medical diagnosis, or treatment services. Our services are not intended to replace the clinical judgment, responsibilities, or services of licensed healthcare providers.</p>
     </div>
   </div>
   <dialog class="support-dialog" id="support-dialog" aria-labelledby="support-dialog-title">

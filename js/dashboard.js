@@ -1518,9 +1518,9 @@ function stopCarousel(state) {
 }
 
 document.querySelectorAll('[data-carousel]').forEach((track) => {
-  const slides = Array.from(track.querySelectorAll('.carousel-slide'));
+  const slides = Array.from(track.querySelectorAll('.carousel-slide, .utility-carousel-slide'));
   const container = track.closest('[data-carousel-container]');
-  const card = track.closest('.clinical-tool-card');
+  const card = track.closest('.clinical-tool-card, .utility-carousel');
   const dots = Array.from(container?.querySelectorAll('.carousel-dot') || []);
   if (!card || slides.length < 2 || slides.length !== dots.length) {
     console.error(`Carousel "${track.dataset.carousel}" has incomplete slides or indicators.`);

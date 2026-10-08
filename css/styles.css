@@ -1158,7 +1158,7 @@ a.utility-card:hover {
 
 .metrics-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 9px;
   margin-top: 12px;
 }
@@ -1233,6 +1233,14 @@ a.utility-card:hover {
   font-size: 7px;
   font-weight: 700;
   letter-spacing: 0.075em;
+}
+
+.clinical-disclaimer {
+  margin: 0 30px 20px;
+  color: var(--muted);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.6;
 }
 
 .clinical-footer i {
@@ -1747,6 +1755,11 @@ body[data-theme='console'] .search-box {
   }
 
   .clinical-footer {
+    margin-right: 20px;
+    margin-left: 20px;
+  }
+
+  .clinical-disclaimer {
     margin-right: 20px;
     margin-left: 20px;
   }
@@ -3094,6 +3107,67 @@ body.dashboard-body[data-theme='console'] .tool-card-content {
 
 .dashboard-body .clinical-tool-card.is-locked .tool-card-content {
   filter: none;
+}
+
+.dashboard-body .utility-heading {
+  align-items: flex-end;
+}
+
+.dashboard-body .utility-heading-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.dashboard-body .utility-research-link {
+  width: min(100%, 300px);
+  min-height: 44px;
+  padding: 4px 8px;
+  gap: 8px;
+}
+
+.dashboard-body .utility-carousel {
+  position: relative;
+  width: min(100%, 560px);
+}
+
+.dashboard-body .utility-carousel-track {
+  min-height: 68px;
+}
+
+.dashboard-body .utility-carousel-slide {
+  display: none;
+  width: 100%;
+  min-height: 68px;
+  padding-right: 100px;
+}
+
+.dashboard-body .utility-carousel-slide.is-active {
+  display: flex;
+}
+
+.dashboard-body .utility-carousel .carousel-dots {
+  top: 50%;
+  right: 10px;
+  bottom: auto;
+  transform: translateY(-50%);
+}
+
+.dashboard-body .metrics-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  .dashboard-body .utility-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-body .utility-heading-links {
+    width: 100%;
+    align-items: flex-start;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
