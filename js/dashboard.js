@@ -1113,11 +1113,42 @@ document.querySelectorAll('[data-handoff]').forEach((link) => {
     }
     event.preventDefault();
     const targetName = `clinical-tool-${Date.now()}`;
+    if (window.location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      if (!link.dataset.continue) {
+        console.error('Clinical tool launch is missing its sign-in continuation.');
+        window.alert('Could not securely open the clinical tool. Please try again.');
+        return;
+      }
+      const loginUrl = new URL('/', 'https://skintegrity-membership.vercel.app');
+      loginUrl.searchParams.set('continue', link.dataset.continue);
+      const launchWindow = window.open(loginUrl.toString(), targetName);
+      if (!launchWindow) {
+        window.alert('Please allow pop-ups for this site to continue signing in to the clinical tool.');
+      }
+      return;
+    }
+
     const launchWindow = window.open('about:blank', targetName);
     if (!launchWindow) {
       window.alert('Please allow pop-ups for this site to open the clinical tool.');
       return;
     }
+    const toolName = link.dataset.continue === 'sora' ? 'SORA' : 'Wound Advisor';
+    const progressDocument = launchWindow.document;
+    progressDocument.title = `Opening ${toolName}`;
+    progressDocument.body.style.cssText = 'display:grid;min-height:100vh;margin:0;place-items:center;background:#0b0e14;color:#f0f4fb;font-family:Arial,sans-serif';
+    const progress = progressDocument.createElement('main');
+    progress.setAttribute('role', 'status');
+    progress.setAttribute('aria-live', 'polite');
+    progress.style.cssText = 'max-width:480px;margin:24px;padding:24px 28px;border:1px solid #263449;border-radius:12px;background:#121824;text-align:center';
+    const heading = progressDocument.createElement('h1');
+    heading.textContent = `Opening ${toolName}`;
+    heading.style.cssText = 'margin:0 0 8px;font-size:22px';
+    const message = progressDocument.createElement('p');
+    message.textContent = 'Connecting securely. This page will continue to the clinical tool when your session is ready.';
+    message.style.cssText = 'margin:0;color:#aab7c9;font-size:14px;line-height:1.5';
+    progress.append(heading, message);
+    progressDocument.body.replaceChildren(progress);
     try {
       const form = document.createElement('form');
       form.method = 'POST';
