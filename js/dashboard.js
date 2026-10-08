@@ -664,6 +664,7 @@ function renderRecentToolUses() {
 async function loadUsageData() {
   const status = document.getElementById('analytics-status');
   const exportButton = document.getElementById('export-data');
+  const copyButton = document.getElementById('copy-data');
   if (status) status.textContent = 'Loading aggregate usage…';
 
   const firstDay = new Date();
@@ -680,11 +681,13 @@ async function loadUsageData() {
     usageRows = snapshot.docs.map((document) => document.data());
     renderUsageData();
     if (exportButton) exportButton.disabled = usageRows.length === 0;
+    if (copyButton) copyButton.disabled = usageRows.length === 0;
   } catch (error) {
     console.error('Could not load aggregate tool usage:', error);
     if (status) status.textContent = 'Usage data could not be loaded. Please try again later.';
     usageRows = [];
     if (exportButton) exportButton.disabled = true;
+    if (copyButton) copyButton.disabled = true;
   }
 }
 
@@ -824,7 +827,7 @@ function setText(id, value) {
   if (element) element.textContent = value;
 }
 
-function exportUsageCsv() {
+function getUsageExportRows() {
   const headings = ['date', 'tool', 'starts', 'completions', 'category', 'category_count'];
   const rows = [headings];
   for (const row of usageRows) {
@@ -838,12 +841,32 @@ function exportUsageCsv() {
     }
   }
 
+  return rows;
+}
+
+function exportUsageCsv() {
+  const rows = getUsageExportRows();
   const csv = rows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(',')).join('\r\n');
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   link.download = 'skintegrity-tool-usage.csv';
   link.click();
   window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
+
+async function copyUsageTable() {
+  const status = document.getElementById('export-status');
+  const table = getUsageExportRows()
+    .map((row) => row.map((cell) => String(cell ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t'))
+    .join('\n');
+
+  try {
+    await navigator.clipboard.writeText(table);
+    if (status) status.textContent = 'Usage table copied. Paste it into Excel, Google Sheets, or Google Docs.';
+  } catch (error) {
+    console.error('Could not copy aggregate usage table:', error);
+    if (status) status.textContent = 'Could not copy the table. Allow clipboard access or use Export CSV instead.';
+  }
 }
 
 const dataToggle = document.getElementById('data-toggle');
@@ -1004,6 +1027,9 @@ if (supportForm) supportForm.addEventListener('submit', submitSupportInquiry);
 
 const exportButton = document.getElementById('export-data');
 if (exportButton) exportButton.addEventListener('click', exportUsageCsv);
+
+const copyDataButton = document.getElementById('copy-data');
+if (copyDataButton) copyDataButton.addEventListener('click', copyUsageTable);
 
 const logoutButton = document.getElementById('logout-btn');
 if (logoutButton) {
@@ -1234,7 +1260,7 @@ const VIRTUAL_TOUR_STEPS = [
     id: 'search-bar',
     target: '#input-search-bar',
     title: 'Search',
-    description: 'The top-bar search field is reserved for finding tools and guides as search features are added.',
+    description: 'Use this field for case IDs only.',
     arrow: 'top',
   },
   {

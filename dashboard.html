@@ -17,7 +17,7 @@
         </span>
         <span class="suite-brand-copy">
           <strong>SORA Clinical Suite</strong>
-          <small>v2.4.0</small>
+          <small>UTD-stable</small>
         </span>
       </a>
 
@@ -53,17 +53,22 @@
     <div class="clinical-workspace">
       <header class="clinical-topbar">
         <div class="breadcrumb-wrap">
-          <div class="breadcrumbs"><span>Clinical Tools</span><i aria-hidden="true">›</i><strong>SORA Assessment</strong></div>
+          <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="dashboard.html" aria-current="page">SKINTEGRITY SUITE</a>
+          </nav>
         </div>
 
-        <label class="search-box">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
-          <input type="search" id="input-search-bar" aria-label="Search tool or guide" placeholder="Search tool or guide..." data-tour-target="search-bar">
-          <kbd>⌘ K</kbd>
-        </label>
+        <div class="search-field-wrap">
+          <label class="search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+            <input type="search" id="input-search-bar" aria-label="Search by case ID" aria-describedby="search-hint" placeholder="Search by case ID..." data-tour-target="search-bar">
+            <kbd>⌘ K</kbd>
+          </label>
+          <p class="search-hint" id="search-hint" role="status">please only include case ID</p>
+        </div>
 
         <div class="topbar-utilities">
-          <span class="version-pill">v4.2.0-STABLE</span>
+          <span class="version-pill">UTD-stable</span>
           <button class="icon-button" id="theme-toggle" type="button" aria-label="Change theme" title="Change theme">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z"/></svg>
           </button>
@@ -81,7 +86,10 @@
               <span class="profile-avatar" id="profile-initials">—</span>
               <span class="profile-copy">
                 <strong id="user-display-name">Loading profile…</strong>
-                <small id="user-display-role">Checking access</small>
+                <span class="profile-role-row">
+                  <small id="user-display-role">Checking access</small>
+                  <span class="warrior-badge" title="Wound Warrior"><i></i> WOUND WARRIOR</span>
+                </span>
               </span>
               <svg class="profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
             </button>
@@ -120,7 +128,6 @@
             <p class="hero-subtitle">Pocket-WOC <span>•</span> Professional Clinical Assessment Framework</p>
             <div class="hero-badges">
               <span class="edition-badge"><i></i> INPATIENT EDITION</span>
-              <span class="warrior-badge"><i></i> WOUND WARRIOR</span>
             </div>
             <p class="hero-description">Empowering inpatient clinicians with evidence-based skin failure analysis, etiology evaluation, and automated dressing guidance to optimize patient outcomes.</p>
           </div>
@@ -278,8 +285,12 @@
             <div><span class="section-kicker">ADMIN DASHBOARD</span><h2>Tool usage</h2>
               <p class="dashboard-section-intro">Daily aggregate activity from the last 30 days. No patient identifiers, case details, or assessment answers are collected.</p>
             </div>
-            <button id="export-data" class="tool-button button-secondary" type="button" disabled>Export CSV</button>
+            <div class="data-export-actions">
+              <button id="copy-data" class="tool-button button-secondary" type="button" disabled>Copy table</button>
+              <button id="export-data" class="tool-button button-secondary" type="button" disabled>Export CSV</button>
+            </div>
           </div>
+          <p id="export-status" class="export-status" role="status" aria-live="polite"></p>
           <div class="metric-grid" aria-live="polite">
             <article class="metric-card"><span>Assessment attempts</span><strong id="metric-starts">—</strong></article>
             <article class="metric-card"><span>Completed reviews</span><strong id="metric-completions">—</strong></article>
