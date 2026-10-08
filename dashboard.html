@@ -164,12 +164,20 @@
           </div>
         </section>
 
-        <div class="section-heading" data-main-dashboard>
-          <div><span class="section-kicker">POCKET-WOC TOOLKIT</span><h2>Clinical tools</h2></div>
+        <div class="section-heading tool-section-heading" data-main-dashboard>
+          <div>
+            <span class="section-kicker">POCKET-WOC TOOLKIT</span>
+            <h2 class="tool-section-title">Clinical Tools
+              <span class="tool-heading-icons" aria-hidden="true">
+                <span class="metric-icon">◉</span>
+                <span class="metric-icon cyan">✚</span>
+              </span>
+            </h2>
+          </div>
           <span class="access-note" id="access-status">Checking your access…</span>
         </div>
 
-        <section class="tool-grid" aria-label="Clinical tools" data-main-dashboard>
+        <section class="tool-grid" aria-label="Clinical Tools" data-main-dashboard>
           <article class="clinical-tool-card sora-card is-locked">
             <div class="tool-card-top">
               <span class="tool-icon sora-icon" aria-hidden="true">
@@ -193,18 +201,15 @@
               <span class="tool-overline">01 / ASSESSMENT FRAMEWORK</span>
               <h3>Pocket-WOC SORA-SF Tool</h3>
               <p>Initiate a multi-domain assessment of skin failure (SORA-SF-CAT). Analyze visual morphology, systemic markers, and perfusion to differentiate from mechanical pressure injury.</p>
-            </div>
-            <div class="tool-card-actions">
-              <a class="tool-button button-secondary" href="https://sora-sf-tool.vercel.app" data-tool="sora-explore" target="_blank" rel="noopener noreferrer">
-                EXPLORE LIBRARY <span aria-hidden="true">↗</span>
-              </a>
-              <div class="action-gate">
-                <a class="tool-button button-primary tool-launch" id="sora-launch" href="https://sora-sf-tool.vercel.app" data-handoff="https://sora-sf-tool.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
-                  LAUNCH DASHBOARD <span aria-hidden="true">→</span>
-                </a>
-                <div class="access-overlay" id="sora-lock">
-                  <span aria-hidden="true">⌑</span><strong>Upgrade to Access</strong>
-                  <small>Upgrade your membership to launch this clinical workflow.</small>
+              <div class="tool-card-actions">
+                <div class="action-gate">
+                  <a class="tool-button button-primary tool-launch" id="sora-launch" href="https://sora-sf-tool.vercel.app" data-handoff="https://sora-sf-tool.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
+                    LAUNCH DASHBOARD <span aria-hidden="true">→</span>
+                  </a>
+                  <div class="access-overlay" id="sora-lock">
+                    <span aria-hidden="true">⌑</span><strong>Upgrade to Access</strong>
+                    <small>Upgrade your membership to launch this clinical workflow.</small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -233,15 +238,15 @@
               <span class="tool-overline">02 / WOUND CARE GUIDANCE</span>
               <h3 id="advisor-tool-title">Pocket-WOC Dressing &amp; Wound Advisor</h3>
               <p>Expert guidance for choosing appropriate dressings based on current wound characteristics, exudate levels, and infection risk. Optimized for Skintegrity Suite protocols.</p>
-            </div>
-            <div class="tool-card-actions advisor-actions">
-              <div class="action-gate">
-                <a class="tool-button button-primary tool-launch" id="advisor-launch" href="https://treatment-advisor.vercel.app" data-handoff="https://treatment-advisor.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
-                  LAUNCH DASHBOARD <span aria-hidden="true">→</span>
-                </a>
-                <div class="access-overlay" id="advisor-lock">
-                  <span aria-hidden="true">⌑</span><strong>Upgrade to Access</strong>
-                  <small>Upgrade your membership to launch this clinical workflow.</small>
+              <div class="tool-card-actions advisor-actions">
+                <div class="action-gate">
+                  <a class="tool-button button-primary tool-launch" id="advisor-launch" href="https://treatment-advisor.vercel.app" data-handoff="https://treatment-advisor.vercel.app/api/auth/session" target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">
+                    LAUNCH DASHBOARD <span aria-hidden="true">→</span>
+                  </a>
+                  <div class="access-overlay" id="advisor-lock">
+                    <span aria-hidden="true">⌑</span><strong>Upgrade to Access</strong>
+                    <small>Upgrade your membership to launch this clinical workflow.</small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -274,8 +279,8 @@
         </section>
 
         <section class="metrics-row" aria-label="Workspace status" data-main-dashboard>
-          <article class="status-metric"><span class="metric-icon">◉</span><span><small>ACTIVE SESSIONS</small><strong id="active-session-status">CONNECTED</strong></span></article>
-          <article class="status-metric"><span class="metric-icon cyan">✚</span><span><small>PROTOCOLS ACTIVE</small><strong>IN-APP GUIDANCE</strong></span></article>
+          <article class="status-metric"><span><small>ACTIVE SESSIONS</small><strong id="active-session-status">CONNECTED</strong></span></article>
+          <article class="status-metric"><span><small>PROTOCOLS ACTIVE</small><strong>IN-APP GUIDANCE</strong></span></article>
           <article class="status-metric"><span class="metric-icon gold">◷</span><span><small>GUIDELINE UPDATE</small><strong>SEE TOOL CONTENT</strong></span></article>
           <article class="status-metric"><span class="metric-icon">?</span><span><small>SUPPORT QUEUE</small><strong><button class="status-contact" id="status-contact" type="button">CONTACT</button></strong></span></article>
         </section>

@@ -840,6 +840,25 @@ body.dashboard-body[data-theme='light'] .clinical-shell .role-option-check {
   letter-spacing: -0.025em;
 }
 
+.dashboard-body .tool-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-body .tool-heading-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dashboard-body .tool-heading-icons .metric-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
 .access-note,
 .section-caption {
   color: #68778e;
@@ -1178,7 +1197,7 @@ a.utility-card:hover {
   color: #f2ae44;
 }
 
-.status-metric > span:nth-child(2) {
+.status-metric > span:last-child {
   display: grid;
   min-width: 0;
   gap: 4px;
@@ -1895,6 +1914,16 @@ body[data-theme='console'] .search-box {
 @media (max-width: 440px) {
   .breadcrumbs {
     font-size: 9px;
+  }
+
+  .dashboard-body .tool-heading-icons {
+    gap: 5px;
+  }
+
+  .dashboard-body .tool-heading-icons .metric-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
   }
 
   .case-tag {
@@ -2924,20 +2953,41 @@ body.dashboard-body[data-theme='light'] .inbox-reply-form textarea {
 }
 
 .dashboard-body .carousel-container {
-  position: relative;
-  height: 176px;
-  flex: 0 0 auto;
-  margin-top: 16px;
+  position: absolute;
+  inset: 0;
+  z-index: auto;
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: #121824;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.dashboard-body .clinical-tool-card {
+  isolation: isolate;
+  min-height: 420px;
+}
+
+.dashboard-body .tool-card-top,
+.dashboard-body .tool-card-content,
+.dashboard-body .tool-card-actions {
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-body .carousel-track {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   width: 100%;
   height: 100%;
+}
+
+.dashboard-body .carousel-container::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(8 13 22 / 12%), rgb(8 13 22 / 18%) 48%, rgb(8 13 22 / 28%));
+  content: '';
+  pointer-events: none;
 }
 
 .dashboard-body .carousel-slide {
@@ -2946,7 +2996,9 @@ body.dashboard-body[data-theme='light'] .inbox-reply-form textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: brightness(1.08) saturate(1.08);
   opacity: 0;
+  z-index: -1;
   transition: opacity 0.6s ease-in-out;
 }
 
@@ -2954,16 +3006,63 @@ body.dashboard-body[data-theme='light'] .inbox-reply-form textarea {
   opacity: 1;
 }
 
+.dashboard-body .tool-card-content {
+  margin: auto 12px 6px;
+  padding: 6px 8px;
+  border: 1px solid rgb(148 163 184 / 30%);
+  border-radius: 8px;
+  background: rgb(9 15 25 / 66%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.dashboard-body .tool-card-content h3 {
+  margin: 4px 0 5px;
+}
+
+.dashboard-body .tool-card-content p {
+  line-height: 1.5;
+}
+
+.dashboard-body .tool-card-actions .tool-launch {
+  min-height: 38px;
+  padding: 0 12px;
+  font-size: 11px;
+}
+
+.dashboard-body .tool-card-actions {
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.dashboard-body .tool-card-actions .action-gate {
+  flex: 0 1 230px;
+  min-width: 0;
+  justify-content: center;
+}
+
+.dashboard-body .tool-card-actions .action-gate,
+.dashboard-body .tool-card-actions .action-gate .tool-launch {
+  min-height: 38px;
+}
+
+.dashboard-body .tool-card-actions .action-gate .tool-launch {
+  width: min(230px, 100%);
+}
+
 .dashboard-body .carousel-dots {
   position: absolute;
-  right: 10px;
-  bottom: 9px;
+  z-index: 2;
+  top: 68px;
+  right: 14px;
+  bottom: auto;
   display: flex;
   gap: 6px;
   padding: 5px 7px;
   border: 1px solid rgb(31 41 61 / 75%);
   border-radius: 999px;
   background: rgb(18 24 36 / 86%);
+  pointer-events: auto;
 }
 
 .dashboard-body .carousel-dot {
@@ -2979,6 +3078,22 @@ body.dashboard-body[data-theme='light'] .inbox-reply-form textarea {
 .dashboard-body .carousel-dot.is-active {
   border-color: #38bdf8;
   background: #38bdf8;
+}
+
+body.dashboard-body[data-theme='light'] .tool-card-content {
+  border-color: rgb(217 225 236 / 90%);
+  background: rgb(255 255 255 / 46%);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+body.dashboard-body[data-theme='console'] .tool-card-content {
+  border-color: rgb(77 244 223 / 35%);
+  background: rgb(8 13 17 / 84%);
+}
+
+.dashboard-body .clinical-tool-card.is-locked .tool-card-content {
+  filter: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3020,8 +3135,15 @@ body.dashboard-body[data-theme='light'] .inbox-reply-form textarea {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-body .carousel-container {
-    height: 190px;
+  .dashboard-body .clinical-tool-card {
+    min-height: 440px;
+  }
+}
+
+@media (max-width: 440px) {
+  .dashboard-body .tool-card-actions .action-gate {
+    flex: 0 1 auto;
+    width: 100%;
   }
 }
 
